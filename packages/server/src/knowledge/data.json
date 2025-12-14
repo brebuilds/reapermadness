@@ -1,0 +1,1143 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "lastUpdated": "2024-12-14",
+    "description": "Comprehensive REAPER DAW knowledge base for AI assistants",
+    "targetUser": "Marc - Linux live looping performer"
+  },
+  "overview": {
+    "name": "REAPER",
+    "fullName": "Rapid Environment for Audio Production, Engineering, and Recording",
+    "developer": "Cockos Incorporated",
+    "founder": "Justin Frankel (creator of Winamp, Gnutella)",
+    "initialRelease": "2006",
+    "currentVersion": "7.x",
+    "platforms": ["Windows", "macOS", "Linux"],
+    "philosophy": "Lightweight, customizable, affordable professional DAW",
+    "installSize": "~25MB",
+    "portable": true,
+    "useCases": [
+      "Music production",
+      "Podcast editing",
+      "Film/game audio post-production",
+      "Live performance and looping",
+      "Sound design",
+      "Audiobook production",
+      "Broadcast audio"
+    ]
+  },
+  "pricing": {
+    "discountedLicense": {
+      "price": 60,
+      "currency": "USD",
+      "eligibility": "Individuals or businesses with annual gross revenue under $20,000 USD"
+    },
+    "commercialLicense": {
+      "price": 225,
+      "currency": "USD",
+      "eligibility": "Businesses with annual gross revenue of $20,000 USD or more"
+    },
+    "trial": {
+      "duration": "60 days",
+      "limitations": "None - full functionality",
+      "note": "Continues working after trial with reminder message"
+    },
+    "upgrades": {
+      "policy": "Free minor updates, discounted major upgrades",
+      "upgradePrice": "60 USD for major version upgrades"
+    }
+  },
+  "features": {
+    "core": [
+      "Unlimited tracks (audio, MIDI, video)",
+      "Non-destructive editing",
+      "Comprehensive routing matrix",
+      "Built-in effects (ReaPlugs)",
+      "JSFX scripting for custom effects",
+      "ReaScript automation (Lua, Python, EEL2)",
+      "Extensive keyboard shortcut customization",
+      "Theme customization",
+      "Portable installation option",
+      "Low CPU usage",
+      "Fast startup time (<2 seconds)",
+      "Small installer (~25MB)"
+    ],
+    "v7Highlights": [
+      "AI-powered stretch markers",
+      "Improved MIDI editing",
+      "Enhanced video support",
+      "New built-in effects",
+      "Performance improvements",
+      "Updated default theme",
+      "Better HiDPI support"
+    ],
+    "routing": {
+      "description": "Flexible signal routing system",
+      "capabilities": [
+        "Unlimited sends/receives per track",
+        "Hardware outputs routing",
+        "Sidechain support",
+        "Folder track summing",
+        "Channel splitting/combining",
+        "Pre/post fader sends",
+        "Multi-channel tracks (up to 64 channels)"
+      ]
+    }
+  },
+  "plugins": {
+    "reaPlugs": {
+      "description": "Built-in professional-grade plugins included with REAPER",
+      "plugins": [
+        {
+          "name": "ReaEQ",
+          "type": "Equalizer",
+          "description": "Unlimited band parametric EQ with spectrum analyzer",
+          "features": ["Unlimited bands", "Multiple filter types", "Real-time spectrum display", "Low CPU usage"],
+          "parameters": {
+            "bandType": ["Low Shelf", "High Shelf", "Band", "Low Pass", "High Pass", "Notch", "Band Pass", "All Pass"],
+            "frequency": "20Hz - 20kHz per band",
+            "gain": "-inf to +24dB",
+            "bandwidth": "0.01 to 4 octaves"
+          }
+        },
+        {
+          "name": "ReaComp",
+          "type": "Compressor",
+          "description": "Full-featured compressor with visual feedback",
+          "features": ["Soft/hard knee", "Auto makeup gain", "Sidechain input", "Visual compression display"],
+          "parameters": {
+            "threshold": "-60dB to 0dB",
+            "ratio": "1:1 to inf:1",
+            "attack": "0.1ms to 500ms",
+            "release": "1ms to 5000ms",
+            "knee": "0dB to 18dB (soft knee width)",
+            "rmsSize": "0ms to 1000ms",
+            "preComp": "0ms to 50ms lookahead"
+          }
+        },
+        {
+          "name": "ReaGate",
+          "type": "Gate/Expander",
+          "description": "Noise gate with look-ahead and sidechain",
+          "features": ["Adjustable attack/release", "Look-ahead", "Sidechain filtering", "Hysteresis"],
+          "parameters": {
+            "threshold": "-120dB to 0dB",
+            "attack": "0.1ms to 500ms",
+            "hold": "0ms to 5000ms",
+            "release": "1ms to 5000ms",
+            "hysteresis": "0dB to 24dB",
+            "preOpen": "0ms to 50ms lookahead"
+          }
+        },
+        {
+          "name": "ReaDelay",
+          "type": "Delay",
+          "description": "Multi-tap delay with tempo sync",
+          "features": ["Multiple taps", "Tempo sync", "Ping-pong mode", "Filter per tap", "Feedback"],
+          "parameters": {
+            "length": "0ms to 10000ms or tempo-synced",
+            "feedback": "0% to 100%",
+            "wet": "0% to 100%",
+            "filter": "Low/High pass per tap"
+          }
+        },
+        {
+          "name": "ReaVerb",
+          "type": "Reverb",
+          "description": "Convolution reverb with impulse response support",
+          "features": ["Impulse response loading", "Echo generator", "Low CPU mode", "Stretching"],
+          "parameters": {
+            "irFile": "Load any WAV/AIFF impulse response",
+            "stretch": "50% to 200%",
+            "trim": "Adjustable IR length",
+            "wet": "0% to 100%"
+          }
+        },
+        {
+          "name": "ReaPitch",
+          "type": "Pitch Shifter",
+          "description": "Real-time pitch shifting and correction",
+          "features": ["Formant preservation", "Multiple algorithms", "Low latency mode"],
+          "parameters": {
+            "shift": "-24 to +24 semitones",
+            "formant": "Preserve or shift formants",
+            "quality": "Low latency / Medium / High quality"
+          }
+        },
+        {
+          "name": "ReaLimit",
+          "type": "Limiter",
+          "description": "Brickwall limiter for mastering",
+          "features": ["True peak limiting", "Auto release", "Visual metering"],
+          "parameters": {
+            "ceiling": "-12dB to 0dB",
+            "threshold": "-24dB to 0dB",
+            "release": "1ms to 3000ms",
+            "truePeak": "On/Off"
+          }
+        },
+        {
+          "name": "ReaXcomp",
+          "type": "Multiband Compressor",
+          "description": "Up to 32-band multiband compressor",
+          "features": ["Unlimited bands", "Per-band solo", "FFT display", "Per-band ratio/threshold"],
+          "parameters": {
+            "bands": "1 to 32 bands",
+            "crossoverFreq": "Per-band adjustable",
+            "perBand": ["Threshold", "Ratio", "Attack", "Release", "Gain"]
+          }
+        },
+        {
+          "name": "ReaSynth",
+          "type": "Synthesizer",
+          "description": "Simple subtractive synthesizer",
+          "features": ["Multiple waveforms", "Filter section", "Envelope control"],
+          "parameters": {
+            "waveform": ["Sine", "Square", "Saw", "Triangle", "Noise"],
+            "attack": "0ms to 10000ms",
+            "decay": "0ms to 10000ms",
+            "sustain": "0% to 100%",
+            "release": "0ms to 10000ms"
+          }
+        },
+        {
+          "name": "ReaSamplOmatic5000",
+          "type": "Sampler",
+          "description": "Powerful sampler for drums and instruments",
+          "features": ["Multi-sample support", "Round-robin", "Velocity layers", "ADSR envelope", "Pitch tracking"],
+          "parameters": {
+            "sampleStart": "Adjustable sample start point",
+            "loopMode": ["Off", "Forward", "Ping-Pong", "Reverse"],
+            "pitchRange": "Note range for playback",
+            "velocityLayers": "Multiple samples per velocity",
+            "obeyNoteOff": "Sustain or one-shot mode"
+          }
+        }
+      ]
+    },
+    "jsfx": {
+      "description": "REAPER's built-in scripted effects format",
+      "language": "EEL2 (similar to C)",
+      "advantages": [
+        "Zero latency possible",
+        "Cross-platform",
+        "Editable in real-time",
+        "Hundreds of community effects available",
+        "Source code included - learn and modify"
+      ],
+      "categories": [
+        "Dynamics (compressors, limiters, gates)",
+        "EQ/Filters",
+        "Modulation (chorus, flanger, phaser)",
+        "Reverb/Delay",
+        "Distortion/Saturation",
+        "Analysis/Metering",
+        "Utility (gain, pan, phase)",
+        "MIDI processors",
+        "Loopers (Super8)"
+      ],
+      "notableJSFX": [
+        "Super8 Looper - 8-track live looper",
+        "1175 Compressor - Classic compressor emulation",
+        "Huge Booty Bass Enhancer",
+        "Liteon Vocoder",
+        "Convolution Reverb (older)",
+        "Guitar/Bass Amp Simulators"
+      ]
+    }
+  },
+  "super8Looper": {
+    "overview": {
+      "name": "Super8 Looper",
+      "type": "JSFX (built into REAPER)",
+      "description": "8-track live looper perfect for performance and jamming",
+      "location": "JS: Looper/Super8",
+      "author": "Cockos"
+    },
+    "tracks": {
+      "count": 8,
+      "perTrackFeatures": [
+        "Independent record/play/stop",
+        "Overdub mode",
+        "Clear individual tracks",
+        "Volume control per track",
+        "Pan control per track",
+        "Reverse playback",
+        "Half-speed playback"
+      ]
+    },
+    "midiMapping": {
+      "description": "Super8 responds to MIDI notes for hands-free control",
+      "defaultChannel": 1,
+      "trackControls": {
+        "C2": { "note": 36, "action": "Record/Play/Overdub Track 1" },
+        "C#2": { "note": 37, "action": "Record/Play/Overdub Track 2" },
+        "D2": { "note": 38, "action": "Record/Play/Overdub Track 3" },
+        "D#2": { "note": 39, "action": "Record/Play/Overdub Track 4" },
+        "E2": { "note": 40, "action": "Record/Play/Overdub Track 5" },
+        "F2": { "note": 41, "action": "Record/Play/Overdub Track 6" },
+        "F#2": { "note": 42, "action": "Record/Play/Overdub Track 7" },
+        "G2": { "note": 43, "action": "Record/Play/Overdub Track 8" }
+      },
+      "globalControls": {
+        "G#2": { "note": 44, "action": "Stop All Tracks" },
+        "A2": { "note": 45, "action": "Stop All Tracks (alternate)" },
+        "A#2": { "note": 46, "action": "Clear All Tracks" },
+        "B2": { "note": 47, "action": "Undo Last Recording" }
+      },
+      "modifiers": {
+        "description": "Hold while pressing track note",
+        "stopTrack": "Press track note when playing to stop",
+        "clearTrack": "Double-tap track note quickly to clear"
+      }
+    },
+    "syncModes": {
+      "free": "No sync - loops at any length",
+      "projectSync": "Sync to project tempo - loops snap to bars",
+      "firstLoop": "First recorded loop sets the tempo"
+    },
+    "workflow": {
+      "basic": [
+        "1. Insert Super8 on a track",
+        "2. Route audio input to the track",
+        "3. Arm track for monitoring",
+        "4. Press C2 (or click) to start recording Track 1",
+        "5. Press C2 again to stop recording and start playback",
+        "6. Press C2 again to overdub onto Track 1",
+        "7. Use other notes (C#2-G2) for tracks 2-8"
+      ],
+      "livePerformance": [
+        "Set up MIDI foot controller mapped to notes C2-B2",
+        "Enable monitoring on input track",
+        "Set sync mode before starting",
+        "Record base loop on Track 1",
+        "Layer additional parts on Tracks 2-8",
+        "Use Stop All (G#2) for breaks",
+        "Use Clear All (A#2) to reset"
+      ]
+    },
+    "tips": [
+      "Set project tempo before recording if using sync mode",
+      "Use folder tracks to submix multiple loopers",
+      "Assign track volumes to MIDI CC for mixing",
+      "Consider using multiple Super8 instances for more tracks",
+      "Export loops by rendering the Super8 track"
+    ]
+  },
+  "extensions": {
+    "sws": {
+      "name": "SWS/S&M Extension",
+      "description": "Essential free extension adding hundreds of features",
+      "website": "https://www.sws-extension.org/",
+      "installation": "Download from website, run installer, restart REAPER",
+      "features": [
+        "Snapshots (save/recall track states)",
+        "Auto-color tracks by name",
+        "Cycle actions (sequence multiple actions)",
+        "Region/marker management",
+        "Track templates",
+        "Custom actions builder",
+        "Groove tool for humanization",
+        "LFO generator for automation",
+        "Marker actions",
+        "Track grouping enhancements",
+        "Console/ReaConsole for quick access"
+      ],
+      "keyActions": [
+        { "id": "_SWS_SAVEPS1", "name": "Save current project snapshot 1" },
+        { "id": "_SWS_RESTOREPS1", "name": "Restore project snapshot 1" },
+        { "id": "_SWSAUTOCOLOR_APPLY", "name": "Apply auto color" },
+        { "id": "_SWS_CYCLEACTION", "name": "Cycle through actions" },
+        { "id": "_SWS_ABOUT", "name": "About SWS Extension" }
+      ]
+    },
+    "reaPack": {
+      "name": "ReaPack",
+      "description": "Package manager for REAPER scripts and extensions",
+      "website": "https://reapack.com/",
+      "installation": "Download installer, run, configure repositories",
+      "features": [
+        "One-click script installation",
+        "Automatic updates",
+        "Multiple repositories",
+        "Dependency management",
+        "Browse thousands of scripts"
+      ],
+      "popularRepositories": [
+        "ReaTeam Scripts",
+        "MPL Scripts",
+        "Lokasenna GUI library",
+        "X-Raym Scripts",
+        "cfillion Scripts"
+      ],
+      "recommendedScripts": [
+        "js_ReaScriptAPI - Extended scripting functions",
+        "Lokasenna_GUI - GUI library for scripts",
+        "Region/Marker manager scripts",
+        "Track templates scripts"
+      ]
+    },
+    "playtime2": {
+      "name": "Playtime 2",
+      "description": "Clip launcher extension (like Ableton Session View)",
+      "developer": "Helgoboss",
+      "price": "Paid (with free trial)",
+      "features": [
+        "Grid-based clip triggering",
+        "Scene launching",
+        "Quantized clip start",
+        "MIDI controller support",
+        "Integration with REAPER's mixer",
+        "Follow actions",
+        "Clip recording"
+      ],
+      "useCases": [
+        "Live electronic performance",
+        "DJing with stems",
+        "Hybrid live/studio workflow",
+        "Sound design triggering"
+      ]
+    },
+    "reaLearn": {
+      "name": "ReaLearn",
+      "description": "Advanced MIDI/OSC controller mapping",
+      "developer": "Helgoboss",
+      "price": "Free (donation supported)",
+      "features": [
+        "Complex conditional mappings",
+        "Virtual control surfaces",
+        "OSC support",
+        "Preset management",
+        "Group mappings",
+        "Feedback to controllers",
+        "Projection feature"
+      ],
+      "useCases": [
+        "Custom MIDI controller setup",
+        "Foot controller mapping",
+        "OSC integration",
+        "Complex live performance mappings"
+      ]
+    }
+  },
+  "actions": {
+    "description": "REAPER actions with Command IDs for scripting and OSC control",
+    "howToFindId": "Actions > Show action list (?) > Select action > see Command ID",
+    "transport": [
+      { "id": 1007, "name": "Play", "shortcut": "Space", "osc": "/play 1" },
+      { "id": 1016, "name": "Stop", "shortcut": "Space", "osc": "/stop" },
+      { "id": 1008, "name": "Pause", "shortcut": "Enter", "osc": "/pause" },
+      { "id": 1013, "name": "Record", "shortcut": "R", "osc": "/record" },
+      { "id": 1068, "name": "Rewind a little", "shortcut": null },
+      { "id": 1069, "name": "Fast forward a little", "shortcut": null },
+      { "id": 40042, "name": "Go to start of project", "shortcut": "W" },
+      { "id": 40043, "name": "Go to end of project", "shortcut": "End" },
+      { "id": 1012, "name": "Toggle repeat", "shortcut": "Ctrl+R", "osc": "/repeat" },
+      { "id": 40073, "name": "Toggle metronome", "shortcut": null },
+      { "id": 40036, "name": "Go to previous marker/project start", "shortcut": "[" },
+      { "id": 40037, "name": "Go to next marker/project end", "shortcut": "]" },
+      { "id": 41047, "name": "Move cursor to start of time selection", "shortcut": null },
+      { "id": 41048, "name": "Move cursor to end of time selection", "shortcut": null }
+    ],
+    "editing": [
+      { "id": 40034, "name": "Select all items", "shortcut": "Ctrl+A" },
+      { "id": 40289, "name": "Unselect all items", "shortcut": "Ctrl+Shift+A" },
+      { "id": 40757, "name": "Split items at edit cursor", "shortcut": "S" },
+      { "id": 40012, "name": "Cut items", "shortcut": "Ctrl+X" },
+      { "id": 40057, "name": "Copy items", "shortcut": "Ctrl+C" },
+      { "id": 40058, "name": "Paste items", "shortcut": "Ctrl+V" },
+      { "id": 40006, "name": "Delete selected items", "shortcut": "Delete" },
+      { "id": 40020, "name": "Remove time selection and loop point selection", "shortcut": "Escape" },
+      { "id": 40630, "name": "Go to previous item", "shortcut": null },
+      { "id": 40631, "name": "Go to next item", "shortcut": null },
+      { "id": 41305, "name": "Nudge item left", "shortcut": null },
+      { "id": 41306, "name": "Nudge item right", "shortcut": null },
+      { "id": 40362, "name": "Glue items", "shortcut": "G" },
+      { "id": 40029, "name": "Undo", "shortcut": "Ctrl+Z" },
+      { "id": 40030, "name": "Redo", "shortcut": "Ctrl+Shift+Z" }
+    ],
+    "tracks": [
+      { "id": 40001, "name": "Insert new track", "shortcut": "Ctrl+T" },
+      { "id": 40702, "name": "Insert virtual instrument on new track", "shortcut": "Ctrl+Alt+T" },
+      { "id": 40005, "name": "Remove selected tracks", "shortcut": null },
+      { "id": 9, "name": "Toggle selected tracks muted", "shortcut": "M" },
+      { "id": 7, "name": "Toggle selected tracks soloed", "shortcut": "S" },
+      { "id": 40294, "name": "Toggle selected tracks record armed", "shortcut": null },
+      { "id": 40285, "name": "Toggle monitoring for selected tracks", "shortcut": null },
+      { "id": 40297, "name": "Select all tracks", "shortcut": null },
+      { "id": 40296, "name": "Select previous track", "shortcut": "Up" },
+      { "id": 40295, "name": "Select next track", "shortcut": "Down" },
+      { "id": 40913, "name": "Duplicate tracks", "shortcut": null },
+      { "id": 40340, "name": "Toggle FX window for selected track", "shortcut": "F" }
+    ],
+    "zoom": [
+      { "id": 1012, "name": "Zoom in horizontal", "shortcut": "+" },
+      { "id": 1011, "name": "Zoom out horizontal", "shortcut": "-" },
+      { "id": 40111, "name": "Zoom in vertical", "shortcut": "Ctrl+Up" },
+      { "id": 40112, "name": "Zoom out vertical", "shortcut": "Ctrl+Down" },
+      { "id": 40031, "name": "Zoom to fit all items", "shortcut": "Ctrl+Home" },
+      { "id": 40110, "name": "Toggle track zoom to max height", "shortcut": "Z" }
+    ],
+    "markers": [
+      { "id": 40157, "name": "Insert marker at cursor", "shortcut": "M" },
+      { "id": 40171, "name": "Insert and name marker", "shortcut": "Shift+M" },
+      { "id": 40174, "name": "Go to marker 1", "shortcut": "1" },
+      { "id": 40175, "name": "Go to marker 2", "shortcut": "2" },
+      { "id": 40176, "name": "Go to marker 3", "shortcut": "3" },
+      { "id": 40177, "name": "Go to marker 4", "shortcut": "4" },
+      { "id": 40178, "name": "Go to marker 5", "shortcut": "5" },
+      { "id": 40179, "name": "Go to marker 6", "shortcut": "6" },
+      { "id": 40180, "name": "Go to marker 7", "shortcut": "7" },
+      { "id": 40181, "name": "Go to marker 8", "shortcut": "8" },
+      { "id": 40182, "name": "Go to marker 9", "shortcut": "9" },
+      { "id": 40183, "name": "Go to marker 10", "shortcut": "0" },
+      { "id": 40306, "name": "Insert region from time selection", "shortcut": "Shift+R" },
+      { "id": 40613, "name": "Delete marker near cursor", "shortcut": null },
+      { "id": 40615, "name": "Delete region near cursor", "shortcut": null }
+    ],
+    "recording": [
+      { "id": 40252, "name": "Set record mode to normal", "shortcut": null },
+      { "id": 40253, "name": "Set record mode to time selection auto punch", "shortcut": null },
+      { "id": 40076, "name": "Toggle recording to a new take lane", "shortcut": null },
+      { "id": 40261, "name": "Insert virtual instrument track", "shortcut": null }
+    ],
+    "fx": [
+      { "id": 40549, "name": "Insert FX", "shortcut": null },
+      { "id": 40271, "name": "Toggle master track FX window", "shortcut": "Shift+F" },
+      { "id": 40344, "name": "Toggle FX bypass for selected tracks", "shortcut": null },
+      { "id": 40298, "name": "Toggle all FX bypass for selected tracks", "shortcut": null }
+    ],
+    "tempo": [
+      { "id": 40220, "name": "Set project tempo", "shortcut": null, "osc": "/tempo/raw {bpm}" },
+      { "id": 41140, "name": "Tap tempo", "shortcut": null }
+    ],
+    "midi": [
+      { "id": 40153, "name": "Open MIDI editor", "shortcut": null },
+      { "id": 40214, "name": "Insert new MIDI item", "shortcut": null },
+      { "id": 40042, "name": "Select all MIDI notes", "shortcut": "Ctrl+A (in editor)" }
+    ],
+    "view": [
+      { "id": 40454, "name": "Toggle show mixer", "shortcut": "Ctrl+M" },
+      { "id": 40075, "name": "Toggle show transport", "shortcut": null },
+      { "id": 41157, "name": "Toggle show docker", "shortcut": null },
+      { "id": 40268, "name": "Toggle show virtual keyboard", "shortcut": null }
+    ]
+  },
+  "osc": {
+    "overview": {
+      "description": "Open Sound Control protocol for remote control of REAPER",
+      "defaultPort": 8000,
+      "protocol": "UDP",
+      "direction": "Bidirectional - send commands and receive state"
+    },
+    "setup": {
+      "steps": [
+        "1. Open REAPER Preferences (Ctrl+P)",
+        "2. Go to Control/OSC/Web",
+        "3. Click 'Add'",
+        "4. Select 'OSC (Open Sound Control)'",
+        "5. Set Local listen port (default: 8000)",
+        "6. Set Device IP (127.0.0.1 for local, or device IP)",
+        "7. Set Device port (port your app listens on)",
+        "8. Choose pattern config (Default works well)",
+        "9. Click OK"
+      ],
+      "recommendedSettings": {
+        "localListenPort": 8000,
+        "devicePort": 9000,
+        "deviceIP": "127.0.0.1"
+      }
+    },
+    "patterns": {
+      "transport": {
+        "/play": "Play (value 1 = play, 0 = stop)",
+        "/stop": "Stop",
+        "/pause": "Toggle pause",
+        "/record": "Toggle record",
+        "/repeat": "Toggle loop/repeat",
+        "/click": "Toggle metronome"
+      },
+      "position": {
+        "/time": "Transport position in seconds",
+        "/beat": "Transport position in beats",
+        "/samples": "Transport position in samples",
+        "/frames": "Transport position in frames",
+        "/rewind": "Rewind",
+        "/forward": "Fast forward"
+      },
+      "tempo": {
+        "/tempo/raw": "Set tempo (float BPM value)",
+        "/tempo/str": "Tempo as string"
+      },
+      "tracks": {
+        "/track/{N}/volume": "Track N volume (0.0-1.0)",
+        "/track/{N}/pan": "Track N pan (-1.0 to 1.0)",
+        "/track/{N}/mute": "Track N mute (0/1)",
+        "/track/{N}/solo": "Track N solo (0/1)",
+        "/track/{N}/recarm": "Track N record arm (0/1)",
+        "/track/{N}/monitor": "Track N input monitor (0/1/2)"
+      },
+      "actions": {
+        "/action/{id}": "Trigger action by ID",
+        "/action/{name}": "Trigger action by name (SWS actions use _NAME format)"
+      },
+      "midi": {
+        "/vkb_midi/{channel}/{note}/{velocity}": "Send MIDI note via virtual keyboard",
+        "/vkb_midi/{channel}/cc/{cc}/{value}": "Send MIDI CC via virtual keyboard"
+      },
+      "fx": {
+        "/track/{N}/fx/{X}/bypass": "Bypass FX X on track N",
+        "/track/{N}/fx/{X}/fxparam/{P}/value": "Set FX parameter value"
+      }
+    },
+    "examples": {
+      "playback": "Send /play with value 1 to start playback",
+      "setTempo": "Send /tempo/raw with value 120.0 to set 120 BPM",
+      "triggerAction": "Send /action/40757 to split items at cursor",
+      "sendMidiNote": "Send /vkb_midi/0/36/127 to trigger C2 note (Super8 Track 1)"
+    }
+  },
+  "linuxSetup": {
+    "overview": {
+      "description": "REAPER has excellent native Linux support",
+      "nativeVersion": "Yes - not Wine/emulation",
+      "recommended": ["Ubuntu Studio", "Fedora Jam", "Arch Linux", "KXStudio repos on any distro"]
+    },
+    "audioSystems": {
+      "jack": {
+        "name": "JACK Audio Connection Kit",
+        "description": "Professional low-latency audio server",
+        "installation": {
+          "ubuntu": "sudo apt install jackd2 qjackctl",
+          "fedora": "sudo dnf install jack-audio-connection-kit qjackctl",
+          "arch": "sudo pacman -S jack2 qjackctl"
+        },
+        "configuration": {
+          "sampleRate": "48000 recommended",
+          "bufferSize": "128-256 samples for low latency",
+          "periods": "2 or 3",
+          "realtime": "Enable for best performance"
+        },
+        "inReaper": {
+          "step1": "Open Preferences > Audio > Device",
+          "step2": "Select JACK for audio system",
+          "step3": "REAPER will auto-connect to JACK",
+          "step4": "Use qjackctl to manage connections"
+        },
+        "troubleshooting": [
+          "Add user to 'audio' group: sudo usermod -aG audio $USER",
+          "Enable realtime: edit /etc/security/limits.d/audio.conf",
+          "Check for xruns in qjackctl",
+          "Increase buffer if getting xruns"
+        ]
+      },
+      "pipewire": {
+        "name": "PipeWire",
+        "description": "Modern audio/video server replacing PulseAudio and JACK",
+        "advantages": [
+          "Drop-in JACK replacement",
+          "Better hardware compatibility",
+          "Lower configuration overhead",
+          "Works with PulseAudio apps simultaneously"
+        ],
+        "installation": {
+          "ubuntu22+": "Usually pre-installed, add: sudo apt install pipewire-jack",
+          "fedora34+": "Pre-installed, enable JACK: systemctl --user enable pipewire-jack",
+          "arch": "sudo pacman -S pipewire pipewire-jack pipewire-pulse"
+        },
+        "inReaper": {
+          "step1": "Works automatically if PipeWire is running",
+          "step2": "Select JACK as audio device (PipeWire provides JACK compatibility)",
+          "step3": "Lower latency possible than pure PulseAudio"
+        },
+        "tools": {
+          "qpwgraph": "Visual patchbay for PipeWire (like qjackctl)",
+          "helvum": "Alternative patchbay",
+          "pw-top": "Monitor PipeWire performance"
+        }
+      },
+      "alsa": {
+        "name": "ALSA (Advanced Linux Sound Architecture)",
+        "description": "Direct hardware access - lowest latency possible",
+        "warning": "Exclusive device access - no other apps can use audio",
+        "useCase": "When absolute lowest latency is required",
+        "inReaper": "Select ALSA as audio device, choose your interface"
+      }
+    },
+    "windowsVSTs": {
+      "yabridge": {
+        "name": "yabridge",
+        "description": "Bridge to run Windows VST/VST3 plugins on Linux via Wine",
+        "website": "https://github.com/robbert-vdh/yabridge",
+        "installation": {
+          "arch": "yay -S yabridge-bin",
+          "ubuntu": "Download from GitHub releases",
+          "manual": "See GitHub for manual installation"
+        },
+        "setup": [
+          "1. Install Wine (wine-staging recommended)",
+          "2. Install yabridge",
+          "3. Create ~/.wine/drive_c/Program Files/VSTPlugins",
+          "4. Install Windows VSTs to that folder",
+          "5. Run: yabridgectl sync",
+          "6. Plugins appear in ~/.vst3/yabridge or ~/.vst/yabridge"
+        ],
+        "inReaper": [
+          "Preferences > Plug-ins > VST",
+          "Add ~/.vst and ~/.vst3 to paths",
+          "Scan for plugins",
+          "Windows plugins appear alongside native ones"
+        ],
+        "tips": [
+          "Use WINE_PREFIX for separate Wine environments",
+          "Some plugins need specific Wine versions",
+          "Check yabridge GitHub wiki for plugin compatibility",
+          "Group-bridge multiple instances for better performance"
+        ]
+      },
+      "alternatives": {
+        "linvst": "Older alternative, less maintained",
+        "carla": "Plugin host that can bridge Windows plugins"
+      }
+    },
+    "performance": {
+      "realtimeSetup": {
+        "description": "For lowest latency and stable performance",
+        "steps": [
+          "1. Add user to audio group: sudo usermod -aG audio $USER",
+          "2. Create /etc/security/limits.d/audio.conf with:",
+          "   @audio - rtprio 99",
+          "   @audio - memlock unlimited",
+          "3. Install low-latency kernel (optional but helps)",
+          "4. Disable CPU frequency scaling during sessions"
+        ]
+      },
+      "recommendedSettings": {
+        "bufferSize": "128 samples for recording, 256 for mixing",
+        "sampleRate": "48000 Hz standard, 96000 for high-quality",
+        "cpuGovernor": "Set to 'performance' for audio work"
+      }
+    },
+    "troubleshooting": {
+      "noAudio": [
+        "Check JACK/PipeWire is running",
+        "Verify connections in qjackctl/qpwgraph",
+        "Check REAPER Audio Device settings",
+        "Try different sample rate"
+      ],
+      "xruns": [
+        "Increase buffer size",
+        "Check CPU governor (set to performance)",
+        "Disable WiFi/Bluetooth during sessions",
+        "Close browser and other apps"
+      ],
+      "pluginNotFound": [
+        "Run 'yabridgectl sync' for yabridge plugins",
+        "Check VST path in REAPER preferences",
+        "Verify Wine is installed correctly",
+        "Check plugin architecture (32 vs 64-bit)"
+      ],
+      "midiNotWorking": [
+        "Check MIDI device in REAPER preferences",
+        "For USB MIDI: check lsusb shows device",
+        "May need to start JACK with MIDI driver: jackd -d alsa -X alsarawmidi"
+      ]
+    }
+  },
+  "liveLooping": {
+    "overview": "REAPER excels at live looping with multiple approaches",
+    "recommendedForMarc": "Super8 Looper with MIDI foot controller",
+    "methods": [
+      {
+        "name": "Super8 Looper",
+        "type": "Built-in JSFX",
+        "bestFor": "Simple, reliable live looping",
+        "pros": ["Free", "Built-in", "8 tracks", "MIDI controllable", "CPU efficient"],
+        "cons": ["Basic feature set", "No clip stretching"]
+      },
+      {
+        "name": "Playtime 2",
+        "type": "Commercial Extension",
+        "bestFor": "Ableton-style clip launching",
+        "pros": ["Professional features", "Visual interface", "Scene launching"],
+        "cons": ["Paid", "More complex setup"]
+      },
+      {
+        "name": "Mobius",
+        "type": "Free VST Plugin",
+        "bestFor": "EDP-style advanced looping",
+        "pros": ["Free", "Extremely powerful", "Scripting"],
+        "cons": ["Steep learning curve", "Complex UI"]
+      },
+      {
+        "name": "MSuperLooper",
+        "type": "Free VST Plugin",
+        "bestFor": "Many tracks, modern UI",
+        "pros": ["16 tracks", "Modern interface", "Free"],
+        "cons": ["Heavier on CPU", "Less documentation"]
+      }
+    ],
+    "hardwareRecommendations": {
+      "footControllers": [
+        {
+          "name": "Behringer FCB1010",
+          "price": "~$150",
+          "pros": "Affordable, 10 switches, 2 expression pedals",
+          "cons": "Requires custom firmware for best use",
+          "recommended": true
+        },
+        {
+          "name": "Morningstar MC6",
+          "price": "~$270",
+          "pros": "Compact, programmable, excellent build",
+          "cons": "Smaller footprint"
+        },
+        {
+          "name": "Morningstar MC8",
+          "price": "~$450",
+          "pros": "8 switches, expression inputs, bank switching",
+          "cons": "Price"
+        },
+        {
+          "name": "Boss ES-8",
+          "price": "~$800",
+          "pros": "Audio routing + MIDI, professional grade",
+          "cons": "Expensive, may be overkill"
+        },
+        {
+          "name": "Line 6 FBV3",
+          "price": "~$250",
+          "pros": "Many switches, expression pedal, USB",
+          "cons": "Large footprint"
+        }
+      ],
+      "audioInterfaces": [
+        {
+          "name": "Focusrite Scarlett 2i2",
+          "price": "~$170",
+          "pros": "Reliable, good preamps, class-compliant on Linux",
+          "cons": "Only 2 inputs"
+        },
+        {
+          "name": "MOTU M4",
+          "price": "~$250",
+          "pros": "Great sound quality, 4 inputs, low latency",
+          "cons": "May need MOTU driver setup on Linux"
+        },
+        {
+          "name": "Audient iD14 MKII",
+          "price": "~$300",
+          "pros": "Excellent preamps, solid build",
+          "cons": "2 preamps only"
+        },
+        {
+          "name": "RME Babyface Pro",
+          "price": "~$800",
+          "pros": "Best-in-class drivers, ultra-low latency",
+          "cons": "Expensive"
+        }
+      ]
+    },
+    "performanceTips": [
+      "Use JACK or PipeWire for lowest latency",
+      "Set buffer to 128-256 samples",
+      "Create a dedicated looping template",
+      "Use separate tracks for monitoring vs recording",
+      "Set up custom actions for common operations",
+      "Practice your foot controller mappings",
+      "Use markers for song sections",
+      "Consider a backup computer or hardware looper"
+    ],
+    "setupGuide": {
+      "basic": [
+        "1. Create input track with monitoring enabled",
+        "2. Create track with Super8 JSFX",
+        "3. Route input track to Super8 track",
+        "4. Set up MIDI controller to send notes C2-B2",
+        "5. Connect controller to REAPER MIDI input",
+        "6. Test: press controller button, should trigger loop"
+      ],
+      "advanced": [
+        "1. Create folder for 'Loops'",
+        "2. Add multiple Super8 instances (one per instrument)",
+        "3. Use ReaLearn for complex MIDI mappings",
+        "4. Set up FX chain on master for live sound",
+        "5. Create markers for song sections",
+        "6. Use custom actions for scene changes"
+      ]
+    }
+  },
+  "workflows": {
+    "podcast": {
+      "name": "Podcast Production",
+      "setup": [
+        "Create track per speaker",
+        "Enable auto-punch for retakes",
+        "Use ReaGate for noise reduction",
+        "Set up loudness metering (-16 LUFS for podcasts)"
+      ],
+      "recommendedPlugins": [
+        "ReaEQ for voice cleanup",
+        "ReaComp for consistent levels",
+        "ReaGate for noise gating",
+        "JS: LUFS Loudness Meter"
+      ],
+      "specs": {
+        "bitrate": "128kbps MP3 or higher",
+        "sampleRate": "44100Hz or 48000Hz",
+        "loudness": "-16 LUFS (Spotify), -14 LUFS (YouTube)"
+      }
+    },
+    "audiobook": {
+      "name": "Audiobook Production",
+      "setup": [
+        "Template with ACX specs",
+        "Noise floor below -60dB",
+        "Peak levels between -3dB and -6dB",
+        "RMS between -23dB and -18dB"
+      ],
+      "acxRequirements": {
+        "peakLevel": "-3dB maximum",
+        "noiseFloor": "-60dB or lower",
+        "rmsLevel": "-23dB to -18dB",
+        "format": "MP3 192kbps CBR",
+        "sampleRate": "44.1kHz",
+        "bitDepth": "16-bit"
+      },
+      "plugins": [
+        "ReaEQ - High pass at 80Hz, presence boost 3-5kHz",
+        "ReaComp - Gentle 2:1-3:1 compression",
+        "ReaLimit - Final limiting to -3dB",
+        "JS: Loudness Meter - Check RMS/LUFS"
+      ]
+    },
+    "filmScoring": {
+      "name": "Film/Video Scoring",
+      "setup": [
+        "Import video to dedicated track",
+        "Use markers for hit points",
+        "Set up tempo mapping",
+        "Configure video output window"
+      ],
+      "tips": [
+        "Use region render matrix for stems",
+        "Embed timecode in renders",
+        "Create stems for dialogue, music, effects",
+        "Use 48kHz sample rate (film standard)"
+      ]
+    },
+    "livePerformance": {
+      "name": "Live Performance Setup",
+      "goals": ["Low latency", "Reliability", "Easy control"],
+      "setup": [
+        "Disable unnecessary plugins",
+        "Use track templates for quick setup",
+        "Set buffer to lowest stable value",
+        "Create custom toolbar with big buttons",
+        "Set up MIDI controller mappings"
+      ],
+      "checklist": [
+        "Audio interface connected and recognized",
+        "MIDI controller connected",
+        "Project template loaded",
+        "Monitoring enabled on input tracks",
+        "Tempo set correctly",
+        "Super8 or looper plugin loaded",
+        "All mappings tested"
+      ]
+    }
+  },
+  "shortcuts": {
+    "essential": {
+      "transport": {
+        "Space": "Play/Stop",
+        "Enter": "Play/Pause",
+        "W": "Go to start of project",
+        "R": "Toggle record",
+        "Ctrl+R": "Toggle repeat/loop",
+        "Home": "Go to start",
+        "End": "Go to end"
+      },
+      "editing": {
+        "S": "Split item at cursor",
+        "Ctrl+C": "Copy",
+        "Ctrl+V": "Paste",
+        "Ctrl+X": "Cut",
+        "Ctrl+Z": "Undo",
+        "Ctrl+Shift+Z": "Redo",
+        "Delete": "Delete selected items",
+        "G": "Glue items",
+        "Ctrl+Shift+G": "Unglue items"
+      },
+      "navigation": {
+        "+": "Zoom in horizontal",
+        "-": "Zoom out horizontal",
+        "Ctrl+Scroll": "Zoom at cursor",
+        "Page Up": "Scroll up",
+        "Page Down": "Scroll down",
+        "Tab": "Move to next transient",
+        "Ctrl+Tab": "Next project tab"
+      },
+      "tracks": {
+        "Ctrl+T": "Insert new track",
+        "Ctrl+Alt+T": "Insert virtual instrument on new track",
+        "M": "Mute selected tracks",
+        "S (with track selected)": "Solo selected tracks",
+        "F": "Toggle FX window for selected track",
+        "V": "Toggle visibility of selected tracks"
+      },
+      "selection": {
+        "Ctrl+A": "Select all items",
+        "Ctrl+Shift+A": "Deselect all",
+        "Double-click item": "Select item and set time selection",
+        "Shift+Click": "Extend selection"
+      },
+      "markers": {
+        "M": "Insert marker at cursor",
+        "Shift+M": "Insert marker with prompt",
+        "Ctrl+Shift+M": "Insert region from time selection",
+        "1-9": "Go to marker 1-9"
+      },
+      "views": {
+        "Ctrl+M": "Toggle mixer",
+        "Ctrl+P": "Preferences",
+        "?": "Action list",
+        "F1": "Help"
+      }
+    }
+  },
+  "troubleshooting": {
+    "commonIssues": [
+      {
+        "issue": "High latency",
+        "solutions": [
+          "Reduce buffer size (try 128-256 samples)",
+          "Use ASIO/JACK driver instead of default",
+          "Check for plugins with high PDC (plugin delay compensation)",
+          "Disable WiFi and background processes",
+          "On Linux: use JACK or PipeWire, not PulseAudio directly"
+        ]
+      },
+      {
+        "issue": "Audio dropouts/glitches",
+        "solutions": [
+          "Increase buffer size slightly",
+          "Check CPU usage in Performance Meter (View > Performance Meter)",
+          "Freeze resource-heavy tracks",
+          "Disable unused tracks/plugins",
+          "On Linux: check for xruns in JACK",
+          "Set CPU governor to 'performance'"
+        ]
+      },
+      {
+        "issue": "MIDI not responding",
+        "solutions": [
+          "Check MIDI device is enabled in Preferences > MIDI Devices",
+          "Verify MIDI channel matches",
+          "Use MIDI Monitor to see incoming data (View > MIDI Input)",
+          "Check 'Enable input for control messages' in MIDI preferences",
+          "On Linux: verify JACK MIDI is set up correctly"
+        ]
+      },
+      {
+        "issue": "Super8 looper not syncing",
+        "solutions": [
+          "Verify sync mode is set correctly in Super8",
+          "Check project tempo is set before recording first loop",
+          "Ensure transport is running for synced mode",
+          "Try 'First loop sets tempo' mode",
+          "Check Super8 is receiving audio (meter should move)"
+        ]
+      },
+      {
+        "issue": "Windows VST not working (Linux)",
+        "solutions": [
+          "Run 'yabridgectl sync' after installing plugins",
+          "Check Wine is installed correctly",
+          "Verify plugin paths in REAPER preferences",
+          "Check yabridge GitHub wiki for plugin compatibility",
+          "Try running plugin standalone in Wine first"
+        ]
+      },
+      {
+        "issue": "No sound from interface (Linux)",
+        "solutions": [
+          "Check JACK/PipeWire is running",
+          "Verify connections in qjackctl or qpwgraph",
+          "Check REAPER Audio Device settings match JACK",
+          "Try different sample rate",
+          "Check interface is not being used by another app"
+        ]
+      },
+      {
+        "issue": "Project won't open",
+        "solutions": [
+          "Check for missing plugins (REAPER will list them)",
+          "Try 'File > Project with all dependencies'",
+          "Check media files exist in expected locations",
+          "Look at REAPER log (Help > Show REAPER log)"
+        ]
+      }
+    ]
+  },
+  "resources": {
+    "official": [
+      {
+        "name": "REAPER User Guide",
+        "url": "https://www.reaper.fm/userguide.php",
+        "type": "PDF manual"
+      },
+      {
+        "name": "REAPER Downloads",
+        "url": "https://www.reaper.fm/download.php",
+        "type": "Software"
+      },
+      {
+        "name": "REAPER Stash",
+        "url": "https://stash.reaper.fm/",
+        "type": "Community resources"
+      }
+    ],
+    "community": [
+      {
+        "name": "Cockos Forums",
+        "url": "https://forum.cockos.com/",
+        "type": "Official forum"
+      },
+      {
+        "name": "r/Reaper",
+        "url": "https://reddit.com/r/reaper",
+        "type": "Reddit community"
+      }
+    ],
+    "tutorials": [
+      {
+        "name": "REAPER Mania",
+        "platform": "YouTube",
+        "focus": "Comprehensive tutorials",
+        "url": "https://www.youtube.com/@REAPERMania"
+      },
+      {
+        "name": "Kenny Gioia",
+        "platform": "YouTube/Groove3",
+        "focus": "Official REAPER videos"
+      },
+      {
+        "name": "The REAPER Blog",
+        "platform": "Website/YouTube",
+        "focus": "Tips and tricks",
+        "url": "https://reaperblog.net/"
+      }
+    ],
+    "books": [
+      {
+        "title": "The REAPER User Guide",
+        "author": "Geoffrey Francis"
+      },
+      {
+        "title": "Up and Running with REAPER",
+        "author": "Geoffrey Francis"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #1a1a1a;
+}
+
+/* Stage-friendly large touch targets */
+.touch-target {
+  @apply min-h-[48px] min-w-[48px];
+}
+
+/* Looper track button styles */
+.loop-btn {
+  @apply rounded-lg font-bold text-lg transition-all duration-150 touch-target;
+  @apply active:scale-95 disabled:opacity-50;
+}
+
+.loop-btn-empty {
+  @apply bg-reaper-surface border-2 border-reaper-border hover:border-reaper-accent;
+}
+
+.loop-btn-recording {
+  @apply bg-red-600 border-2 border-red-400 animate-pulse;
+}
+
+.loop-btn-playing {
+  @apply bg-green-600 border-2 border-green-400;
+}
+
+.loop-btn-stopped {
+  @apply bg-yellow-600 border-2 border-yellow-400;
+}
+
+/* Transport button styles */
+.transport-btn {
+  @apply p-4 rounded-xl text-xl font-bold transition-all;
+  @apply hover:scale-105 active:scale-95;
+  @apply touch-target flex items-center justify-center gap-2;
+}
