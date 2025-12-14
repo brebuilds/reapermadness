@@ -1,7 +1,25 @@
-const API_BASE = import.meta.env.VITE_API_URL || '';
+// Get server URL from localStorage or default
+function getServerUrl(): string {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('reaper-assistant-settings');
+    if (stored) {
+      try {
+        const settings = JSON.parse(stored);
+        if (settings.state?.serverUrl) {
+          return settings.state.serverUrl;
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+    }
+  }
+  // Default: same origin (for local dev) or localhost
+  return import.meta.env.VITE_API_URL || '';
+}
 
 async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const serverUrl = getServerUrl();
+  const response = await fetch(`${serverUrl}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -129,6 +147,11 @@ export async function updateOSCConfig(config: { host?: string; port?: number; li
   });
 }
 
-export async function healthCheck() {
-  return fetchAPI<{ status: string; osc: { host: string; port: number } }>('/health');
+export async function healthCheck(serverUrl?: string) {
+  const url = serverUrl || getServerUrl();
+  const response = await fetch(`${url}/health`, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  return response.json() as Promise<{ status: string; osc: { host: string; port: number } }>;
 }

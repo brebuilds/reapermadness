@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { healthCheck, updateOSCConfig } from '../../api/client';
-import { Save, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { Save, RefreshCw, CheckCircle, XCircle, Server, AlertCircle } from 'lucide-react';
 
 export function Settings() {
-  const { oscHost, oscPort, apiKey, setSettings } = useAppStore();
+  const { serverUrl, oscHost, oscPort, apiKey, isConnected, setSettings, setConnected } = useAppStore();
+  const [localServerUrl, setLocalServerUrl] = useState(serverUrl);
   const [localHost, setLocalHost] = useState(oscHost);
   const [localPort, setLocalPort] = useState(oscPort.toString());
   const [localApiKey, setLocalApiKey] = useState(apiKey);
-  const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'connected' | 'error'>('unknown');
   const [isTesting, setIsTesting] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -17,12 +17,13 @@ export function Settings() {
     if (isNaN(port)) return;
 
     setSettings({
+      serverUrl: localServerUrl,
       oscHost: localHost,
       oscPort: port,
       apiKey: localApiKey,
     });
 
-    // Also update the server's OSC config
+    // Also update the server's OSC config if connected
     try {
       await updateOSCConfig({ host: localHost, port });
     } catch (e) {
@@ -31,17 +32,20 @@ export function Settings() {
 
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+
+    // Re-test connection after save
+    testConnection(localServerUrl);
   };
 
-  const testConnection = async () => {
+  const testConnection = async (url?: string) => {
     setIsTesting(true);
-    setConnectionStatus('unknown');
+    const testUrl = url || localServerUrl;
 
     try {
-      await healthCheck();
-      setConnectionStatus('connected');
+      await healthCheck(testUrl);
+      setConnected(true);
     } catch (e) {
-      setConnectionStatus('error');
+      setConnected(false);
     } finally {
       setIsTesting(false);
     }
@@ -55,39 +59,73 @@ export function Settings() {
     <div className="max-w-2xl space-y-8">
       <div>
         <h2 className="text-xl font-bold text-white mb-2">Settings</h2>
-        <p className="text-gray-400">Configure OSC connection to REAPER</p>
+        <p className="text-gray-400">Configure connection to your local REAPER server</p>
       </div>
 
-      {/* Connection Status */}
-      <div className="bg-reaper-surface rounded-lg p-4 border border-reaper-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {connectionStatus === 'connected' && (
-              <CheckCircle className="w-5 h-5 text-green-500" />
-            )}
-            {connectionStatus === 'error' && (
-              <XCircle className="w-5 h-5 text-red-500" />
-            )}
-            {connectionStatus === 'unknown' && (
-              <div className="w-5 h-5 rounded-full bg-gray-500" />
-            )}
-            <span className="text-white">
-              Server Status:{' '}
-              {connectionStatus === 'connected'
-                ? 'Connected'
-                : connectionStatus === 'error'
-                ? 'Not Connected'
-                : 'Unknown'}
-            </span>
+      {/* Important Notice for Web Deployment */}
+      <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+        <div className="flex gap-3">
+          <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="text-blue-200 font-medium mb-1">Running from the web?</p>
+            <p className="text-blue-300/80">
+              You need to run the server on your computer to control REAPER.
+              Open a terminal and run:
+            </p>
+            <code className="block bg-black/30 rounded px-3 py-2 mt-2 text-green-400 font-mono text-xs">
+              cd reaper-assistant && pnpm install && pnpm dev:server
+            </code>
+            <p className="text-blue-300/80 mt-2">
+              Then enter <code className="bg-black/30 px-1 rounded">http://localhost:3001</code> as the Server URL below.
+            </p>
           </div>
-          <button
-            onClick={testConnection}
-            disabled={isTesting}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-reaper-border hover:bg-reaper-accent transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${isTesting ? 'animate-spin' : ''}`} />
-            Test
-          </button>
+        </div>
+      </div>
+
+      {/* Server Connection */}
+      <div className="bg-reaper-surface rounded-lg p-6 border border-reaper-border space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-white flex items-center gap-2">
+            <Server className="w-5 h-5" />
+            Server Connection
+          </h3>
+          <div className="flex items-center gap-2">
+            {isConnected ? (
+              <span className="flex items-center gap-1 text-green-400 text-sm">
+                <CheckCircle className="w-4 h-4" />
+                Connected
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-red-400 text-sm">
+                <XCircle className="w-4 h-4" />
+                Not Connected
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">Server URL</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={localServerUrl}
+              onChange={(e) => setLocalServerUrl(e.target.value)}
+              className="flex-1 px-4 py-2 rounded-lg bg-reaper-bg border border-reaper-border focus:border-reaper-accent focus:outline-none font-mono"
+              placeholder="http://localhost:3001"
+            />
+            <button
+              onClick={() => testConnection(localServerUrl)}
+              disabled={isTesting}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-reaper-border hover:bg-reaper-accent transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isTesting ? 'animate-spin' : ''}`} />
+              Test
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            The URL where your REAPER Assistant server is running
+          </p>
         </div>
       </div>
 
@@ -95,12 +133,12 @@ export function Settings() {
       <div className="bg-reaper-surface rounded-lg p-6 border border-reaper-border space-y-4">
         <h3 className="font-semibold text-white">OSC Configuration</h3>
         <p className="text-sm text-gray-400">
-          Configure the OSC connection to REAPER. Default port is 8000.
+          These settings are used by the server to communicate with REAPER.
         </p>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Host</label>
+            <label className="block text-sm text-gray-400 mb-1">REAPER Host</label>
             <input
               type="text"
               value={localHost}
@@ -110,7 +148,7 @@ export function Settings() {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Port</label>
+            <label className="block text-sm text-gray-400 mb-1">REAPER OSC Port</label>
             <input
               type="text"
               value={localPort}
@@ -154,19 +192,37 @@ export function Settings() {
         )}
       </div>
 
-      {/* REAPER OSC Setup Instructions */}
+      {/* Setup Instructions */}
       <div className="bg-reaper-surface rounded-lg p-6 border border-reaper-border">
-        <h3 className="font-semibold text-white mb-4">REAPER OSC Setup</h3>
-        <ol className="list-decimal list-inside space-y-2 text-gray-300 text-sm">
-          <li>Open REAPER Preferences (Ctrl+P)</li>
-          <li>Go to Control/OSC/Web</li>
-          <li>Click "Add"</li>
-          <li>Select "OSC (Open Sound Control)"</li>
-          <li>Set Local listen port to <code className="bg-reaper-bg px-2 py-1 rounded">8000</code></li>
-          <li>Set Device IP to <code className="bg-reaper-bg px-2 py-1 rounded">127.0.0.1</code></li>
-          <li>Set Device port to <code className="bg-reaper-bg px-2 py-1 rounded">9000</code></li>
-          <li>Click OK and restart REAPER</li>
-        </ol>
+        <h3 className="font-semibold text-white mb-4">Quick Setup Guide</h3>
+
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="text-reaper-accent font-medium mb-2">1. Start the Server (on your computer)</h4>
+            <code className="block bg-reaper-bg px-3 py-2 rounded text-green-400 font-mono text-xs">
+              cd reaper-assistant && pnpm install && pnpm dev:server
+            </code>
+          </div>
+
+          <div>
+            <h4 className="text-reaper-accent font-medium mb-2">2. Configure REAPER OSC</h4>
+            <ol className="list-decimal list-inside space-y-1 text-gray-300">
+              <li>Open REAPER Preferences (Ctrl+P)</li>
+              <li>Go to Control/OSC/Web</li>
+              <li>Click "Add" → "OSC"</li>
+              <li>Set Local listen port to <code className="bg-reaper-bg px-2 py-0.5 rounded">8000</code></li>
+              <li>Set Device port to <code className="bg-reaper-bg px-2 py-0.5 rounded">9000</code></li>
+              <li>Click OK</li>
+            </ol>
+          </div>
+
+          <div>
+            <h4 className="text-reaper-accent font-medium mb-2">3. Connect</h4>
+            <p className="text-gray-300">
+              Enter <code className="bg-reaper-bg px-2 py-0.5 rounded">http://localhost:3001</code> as the Server URL above and click Test.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

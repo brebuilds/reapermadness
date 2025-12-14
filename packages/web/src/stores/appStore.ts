@@ -15,6 +15,10 @@ interface AppState {
   currentView: View;
   performanceMode: boolean;
 
+  // Connection state
+  serverUrl: string;
+  isConnected: boolean;
+
   // Transport state
   isPlaying: boolean;
   isRecording: boolean;
@@ -32,9 +36,11 @@ interface AppState {
   // Actions
   setView: (view: View) => void;
   togglePerformanceMode: () => void;
+  setServerUrl: (url: string) => void;
+  setConnected: (connected: boolean) => void;
   setTransportState: (state: Partial<Pick<AppState, 'isPlaying' | 'isRecording' | 'repeatEnabled' | 'tempo'>>) => void;
   setLoopTrackState: (trackId: number, state: LoopTrackState, hasContent?: boolean) => void;
-  setSettings: (settings: Partial<Pick<AppState, 'oscHost' | 'oscPort' | 'apiKey'>>) => void;
+  setSettings: (settings: Partial<Pick<AppState, 'oscHost' | 'oscPort' | 'apiKey' | 'serverUrl'>>) => void;
 }
 
 const initialLoopTracks: LoopTrack[] = Array.from({ length: 8 }, (_, i) => ({
@@ -49,6 +55,8 @@ export const useAppStore = create<AppState>()(
       // Initial state
       currentView: 'dashboard',
       performanceMode: false,
+      serverUrl: 'http://localhost:3001',
+      isConnected: false,
       isPlaying: false,
       isRecording: false,
       repeatEnabled: false,
@@ -63,6 +71,10 @@ export const useAppStore = create<AppState>()(
 
       togglePerformanceMode: () =>
         set((state) => ({ performanceMode: !state.performanceMode })),
+
+      setServerUrl: (serverUrl) => set({ serverUrl }),
+
+      setConnected: (isConnected) => set({ isConnected }),
 
       setTransportState: (transportState) => set(transportState),
 
@@ -80,6 +92,7 @@ export const useAppStore = create<AppState>()(
     {
       name: 'reaper-assistant-settings',
       partialize: (state) => ({
+        serverUrl: state.serverUrl,
         oscHost: state.oscHost,
         oscPort: state.oscPort,
         apiKey: state.apiKey,
