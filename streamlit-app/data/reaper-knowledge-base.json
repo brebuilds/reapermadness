@@ -1,0 +1,654 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "lastUpdated": "2024-12-14",
+    "description": "Comprehensive REAPER DAW knowledge base for AI assistants and RAG systems",
+    "author": "Bre & Claude",
+    "license": "MIT"
+  },
+  "overview": {
+    "name": "REAPER",
+    "fullName": "Rapid Environment for Audio Production, Engineering, and Recording",
+    "developer": "Cockos Incorporated",
+    "founder": "Justin Frankel (creator of Winamp, Gnutella)",
+    "initialRelease": "2006",
+    "currentVersion": "7.x",
+    "platforms": ["Windows", "macOS", "Linux"],
+    "philosophy": "Lightweight, customizable, affordable professional DAW",
+    "useCases": [
+      "Music production",
+      "Podcast editing",
+      "Film/game audio post-production",
+      "Live performance and looping",
+      "Sound design",
+      "Audiobook production",
+      "Broadcast audio"
+    ]
+  },
+  "pricing": {
+    "discountedLicense": {
+      "price": 60,
+      "currency": "USD",
+      "eligibility": "Individuals or businesses with annual gross revenue under $20,000 USD from products using REAPER, or educational/non-profit use"
+    },
+    "commercialLicense": {
+      "price": 225,
+      "currency": "USD",
+      "eligibility": "Businesses with annual gross revenue of $20,000 USD or more from products using REAPER"
+    },
+    "trial": {
+      "duration": "60 days",
+      "limitations": "None - full functionality",
+      "note": "Continues working after trial with reminder message"
+    },
+    "upgrades": {
+      "policy": "Free minor updates, discounted major upgrades",
+      "upgradePrice": "60 USD for major version upgrades"
+    }
+  },
+  "features": {
+    "core": [
+      "Unlimited tracks (audio, MIDI, video)",
+      "Non-destructive editing",
+      "Comprehensive routing matrix",
+      "Built-in effects (ReaPlugs)",
+      "JSFX scripting for custom effects",
+      "ReaScript automation (Lua, Python, EEL2)",
+      "Extensive keyboard shortcut customization",
+      "Theme customization",
+      "Portable installation option",
+      "Low CPU usage",
+      "Fast startup time",
+      "Small installer (~25MB)"
+    ],
+    "v7Highlights": [
+      "AI-powered stretch markers",
+      "Improved MIDI editing",
+      "Enhanced video support",
+      "New built-in effects",
+      "Performance improvements",
+      "Updated default theme"
+    ],
+    "routing": {
+      "description": "Flexible signal routing system",
+      "capabilities": [
+        "Unlimited sends/receives per track",
+        "Hardware outputs routing",
+        "Sidechain support",
+        "Folder track summing",
+        "Channel splitting/combining"
+      ]
+    }
+  },
+  "plugins": {
+    "reaPlugs": {
+      "description": "Built-in professional-grade plugins included with REAPER",
+      "plugins": [
+        {
+          "name": "ReaEQ",
+          "type": "Equalizer",
+          "description": "Unlimited band parametric EQ with spectrum analyzer",
+          "features": ["Unlimited bands", "Multiple filter types", "Real-time spectrum display"]
+        },
+        {
+          "name": "ReaComp",
+          "type": "Compressor",
+          "description": "Full-featured compressor with visual feedback",
+          "features": ["Soft/hard knee", "Auto makeup gain", "Sidechain input", "Visual compression display"]
+        },
+        {
+          "name": "ReaGate",
+          "type": "Gate/Expander",
+          "description": "Noise gate with look-ahead and sidechain",
+          "features": ["Adjustable attack/release", "Look-ahead", "Sidechain filtering"]
+        },
+        {
+          "name": "ReaDelay",
+          "type": "Delay",
+          "description": "Multi-tap delay with tempo sync",
+          "features": ["Multiple taps", "Tempo sync", "Ping-pong mode", "Filter per tap"]
+        },
+        {
+          "name": "ReaVerb",
+          "type": "Reverb",
+          "description": "Convolution reverb with impulse response support",
+          "features": ["Impulse response loading", "Echo generator", "Low CPU mode"]
+        },
+        {
+          "name": "ReaPitch",
+          "type": "Pitch Shifter",
+          "description": "Real-time pitch shifting and correction",
+          "features": ["Formant preservation", "Multiple algorithms"]
+        },
+        {
+          "name": "ReaLimit",
+          "type": "Limiter",
+          "description": "Brickwall limiter for mastering",
+          "features": ["True peak limiting", "Auto release", "Visual metering"]
+        },
+        {
+          "name": "ReaXcomp",
+          "type": "Multiband Compressor",
+          "description": "Up to 32-band multiband compressor",
+          "features": ["Unlimited bands", "Per-band solo", "FFT display"]
+        },
+        {
+          "name": "ReaSynth",
+          "type": "Synthesizer",
+          "description": "Simple subtractive synthesizer",
+          "features": ["Multiple waveforms", "Filter section", "Envelope control"]
+        },
+        {
+          "name": "ReaSamplOmatic5000",
+          "type": "Sampler",
+          "description": "Powerful sampler for drums and instruments",
+          "features": ["Multi-sample support", "Round-robin", "Velocity layers", "ADSR envelope"]
+        }
+      ]
+    },
+    "jsfx": {
+      "description": "REAPER's built-in scripted effects format",
+      "language": "EEL2 (similar to C)",
+      "advantages": [
+        "Zero latency",
+        "Cross-platform",
+        "Editable in real-time",
+        "Hundreds of community effects available"
+      ],
+      "categories": [
+        "Dynamics",
+        "EQ/Filters",
+        "Modulation",
+        "Reverb/Delay",
+        "Distortion",
+        "Analysis/Metering",
+        "Utility",
+        "MIDI processors"
+      ]
+    }
+  },
+  "extensions": {
+    "sws": {
+      "name": "SWS/S&M Extension",
+      "description": "Essential free extension adding hundreds of features",
+      "website": "https://www.sws-extension.org/",
+      "features": [
+        "Snapshots (save/recall track states)",
+        "Auto-color tracks",
+        "Cycle actions",
+        "Region/marker management",
+        "Track templates",
+        "Custom actions builder",
+        "Groove tool",
+        "LFO generator for automation"
+      ],
+      "installation": "Download from website, run installer"
+    },
+    "reaPack": {
+      "name": "ReaPack",
+      "description": "Package manager for REAPER scripts and extensions",
+      "website": "https://reapack.com/",
+      "features": [
+        "One-click script installation",
+        "Automatic updates",
+        "Multiple repositories",
+        "Dependency management"
+      ],
+      "popularRepositories": [
+        "ReaTeam Scripts",
+        "MPL Scripts",
+        "Lokasenna GUI library",
+        "X-Raym Scripts"
+      ]
+    },
+    "playtime2": {
+      "name": "Playtime 2",
+      "description": "Clip launcher extension (like Ableton Session View)",
+      "developer": "Helgoboss",
+      "price": "Paid (with free trial)",
+      "features": [
+        "Grid-based clip triggering",
+        "Scene launching",
+        "Quantized clip start",
+        "MIDI controller support",
+        "Integration with REAPER's mixer"
+      ]
+    },
+    "reaLearn": {
+      "name": "ReaLearn",
+      "description": "Advanced MIDI/OSC controller mapping",
+      "developer": "Helgoboss",
+      "price": "Free",
+      "features": [
+        "Complex conditional mappings",
+        "Virtual control surfaces",
+        "OSC support",
+        "Preset management",
+        "Group mappings"
+      ]
+    }
+  },
+  "scripting": {
+    "reaScript": {
+      "description": "REAPER's scripting API for automation and custom tools",
+      "languages": [
+        {
+          "name": "Lua",
+          "description": "Recommended for most scripts",
+          "advantages": ["Fast", "Good documentation", "Large community"]
+        },
+        {
+          "name": "EEL2",
+          "description": "REAPER's native scripting language",
+          "advantages": ["Direct memory access", "Used for JSFX"]
+        },
+        {
+          "name": "Python",
+          "description": "Available with external libraries",
+          "advantages": ["Familiar syntax", "External library access"]
+        }
+      ],
+      "capabilities": [
+        "Track/item manipulation",
+        "MIDI editing",
+        "Automation control",
+        "Custom dialogs",
+        "File I/O",
+        "Extension development"
+      ],
+      "resources": [
+        "ReaScript API documentation (built into REAPER)",
+        "ReaScript_API.txt in REAPER folder",
+        "Cockos forum scripting section"
+      ]
+    }
+  },
+  "themes": {
+    "default": "REAPER 7 Default (modern, clean design)",
+    "popular": [
+      {
+        "name": "Default V7",
+        "style": "Modern, flat design",
+        "author": "Cockos"
+      },
+      {
+        "name": "Imperial",
+        "style": "Pro Tools-like",
+        "author": "White Tie"
+      },
+      {
+        "name": "Blender",
+        "style": "Cubase-like",
+        "author": "Funtime50"
+      },
+      {
+        "name": "I Like Turtles",
+        "style": "Logic Pro-like",
+        "author": "Razz"
+      },
+      {
+        "name": "Flat Madness",
+        "style": "Ableton-inspired flat design",
+        "author": "Ruminate"
+      }
+    ],
+    "customization": {
+      "method": "Walter theme engine",
+      "capabilities": [
+        "Complete UI redesign",
+        "Custom graphics",
+        "Layout changes",
+        "Color schemes"
+      ]
+    }
+  },
+  "shortcuts": {
+    "essential": {
+      "transport": {
+        "Space": "Play/Stop",
+        "Enter": "Play/Pause",
+        "W": "Go to start of project",
+        "R": "Toggle record",
+        "Ctrl+R": "Toggle repeat/loop",
+        "Home": "Go to start",
+        "End": "Go to end"
+      },
+      "editing": {
+        "S": "Split item at cursor",
+        "Ctrl+C": "Copy",
+        "Ctrl+V": "Paste",
+        "Ctrl+X": "Cut",
+        "Ctrl+Z": "Undo",
+        "Ctrl+Shift+Z": "Redo",
+        "Delete": "Delete selected items",
+        "G": "Group items",
+        "U": "Ungroup items"
+      },
+      "navigation": {
+        "Ctrl+Plus": "Zoom in horizontal",
+        "Ctrl+Minus": "Zoom out horizontal",
+        "Ctrl+Scroll": "Zoom at cursor",
+        "Page Up": "Scroll up",
+        "Page Down": "Scroll down",
+        "Tab": "Move to next transient",
+        "Ctrl+Tab": "Next project tab"
+      },
+      "tracks": {
+        "Ctrl+T": "Insert new track",
+        "Ctrl+Alt+T": "Insert virtual instrument on new track",
+        "M": "Mute selected tracks",
+        "S (with track selected)": "Solo selected tracks",
+        "F": "Toggle FX window for selected track",
+        "V": "Toggle visibility of selected tracks"
+      },
+      "selection": {
+        "Ctrl+A": "Select all items",
+        "Ctrl+Shift+A": "Deselect all",
+        "Double-click item": "Select item and set time selection",
+        "Shift+Click": "Extend selection"
+      },
+      "markers": {
+        "M": "Insert marker at cursor",
+        "Shift+M": "Insert marker with prompt",
+        "Ctrl+Shift+M": "Insert region from time selection",
+        "1-9": "Go to marker 1-9"
+      },
+      "recording": {
+        "Ctrl+Shift+R": "Record (toggle record on selected tracks)",
+        "Alt+Click record button": "Record mode options",
+        "Ctrl+Click record button": "Record from last start position"
+      }
+    },
+    "customization": {
+      "location": "Actions > Show action list (? key)",
+      "features": [
+        "Assign any key combination",
+        "Create custom actions (macros)",
+        "Import/export keymaps",
+        "Search all actions"
+      ]
+    }
+  },
+  "liveLooping": {
+    "overview": "REAPER excels at live looping with multiple approaches",
+    "methods": [
+      {
+        "name": "Super8 Looper",
+        "type": "Built-in JSFX",
+        "description": "8-track looper included with REAPER",
+        "features": [
+          "8 independent loop tracks",
+          "MIDI controllable",
+          "Sync to project tempo",
+          "Overdub mode",
+          "Half-speed/reverse playback"
+        ],
+        "midiMapping": {
+          "C2": "Record/Play Track 1",
+          "C#2": "Record/Play Track 2",
+          "D2": "Record/Play Track 3",
+          "D#2": "Record/Play Track 4",
+          "E2": "Record/Play Track 5",
+          "F2": "Record/Play Track 6",
+          "F#2": "Record/Play Track 7",
+          "G2": "Record/Play Track 8",
+          "A2": "Stop All",
+          "A#2": "Clear All"
+        }
+      },
+      {
+        "name": "Playtime 2",
+        "type": "Commercial Extension",
+        "description": "Full clip launcher similar to Ableton Live",
+        "features": [
+          "Unlimited clips per track",
+          "Scene triggering",
+          "Quantized clip launch",
+          "Follow actions",
+          "Visual grid interface"
+        ]
+      },
+      {
+        "name": "Mobius",
+        "type": "Free VST Plugin",
+        "description": "Advanced looper inspired by hardware loopers",
+        "features": [
+          "EDP-style looping",
+          "Multiple tracks",
+          "Extensive scripting",
+          "Complex routing"
+        ]
+      },
+      {
+        "name": "MSuperLooper",
+        "type": "Free VST Plugin",
+        "description": "16-track looper by Melda Production",
+        "features": [
+          "16 tracks",
+          "Tempo sync",
+          "Effects per loop",
+          "Modern UI"
+        ]
+      }
+    ],
+    "hardwareRecommendations": [
+      {
+        "type": "MIDI Foot Controller",
+        "examples": ["Behringer FCB1010", "Boss ES-8", "Morningstar MC6", "Line 6 Helix"],
+        "usage": "Hands-free loop control"
+      },
+      {
+        "type": "Audio Interface",
+        "requirements": ["Low latency (<10ms)", "Multiple inputs", "MIDI I/O"],
+        "examples": ["Focusrite Scarlett series", "MOTU M-series", "RME Babyface"]
+      },
+      {
+        "type": "Dedicated Looper Pedal",
+        "note": "Can be used alongside REAPER for hybrid setups",
+        "examples": ["Boss RC-500", "TC Electronic Ditto X4", "Electro-Harmonix 45000"]
+      }
+    ],
+    "performanceTips": [
+      "Use ASIO drivers on Windows for lowest latency",
+      "Set buffer to 64-128 samples for live playing",
+      "Freeze tracks not being used live",
+      "Use track templates for quick setup",
+      "Create custom actions for common loop operations",
+      "Consider dedicated SSD for project files"
+    ]
+  },
+  "workflows": {
+    "podcast": {
+      "name": "Podcast Production",
+      "setup": [
+        "Create track per speaker",
+        "Enable auto-punch for retakes",
+        "Use ReaGate for noise reduction",
+        "Set up loudness metering (-16 LUFS for podcasts)"
+      ],
+      "recommendedPlugins": [
+        "ReaEQ for voice cleanup",
+        "ReaComp for consistent levels",
+        "ReaGate for noise gating",
+        "JS: LUFS Loudness Meter"
+      ]
+    },
+    "audiobook": {
+      "name": "Audiobook Production",
+      "setup": [
+        "Template with ACX specs",
+        "Noise floor below -60dB",
+        "Peak levels between -3dB and -6dB",
+        "RMS between -23dB and -18dB"
+      ],
+      "acxRequirements": {
+        "peakLevel": "-3dB maximum",
+        "noiseFloor": "-60dB or lower",
+        "rmsLevel": "-23dB to -18dB"
+      }
+    },
+    "filmScoring": {
+      "name": "Film/Video Scoring",
+      "setup": [
+        "Import video to dedicated track",
+        "Use markers for hit points",
+        "Set up tempo mapping",
+        "Configure video output window"
+      ],
+      "tips": [
+        "Use region render matrix for stems",
+        "Embed timecode in renders",
+        "Create stems for dialogue, music, effects"
+      ]
+    }
+  },
+  "systemRequirements": {
+    "windows": {
+      "minimum": {
+        "os": "Windows 7 or later",
+        "cpu": "SSE2 capable processor",
+        "ram": "2 GB",
+        "disk": "100 MB for installation"
+      },
+      "recommended": {
+        "os": "Windows 10/11",
+        "cpu": "Multi-core processor",
+        "ram": "8 GB or more",
+        "disk": "SSD for projects"
+      }
+    },
+    "macos": {
+      "minimum": {
+        "os": "macOS 10.5 or later",
+        "cpu": "Intel or Apple Silicon",
+        "ram": "2 GB"
+      },
+      "recommended": {
+        "os": "macOS 12 or later",
+        "cpu": "Apple Silicon or Intel i5+",
+        "ram": "8 GB or more"
+      }
+    },
+    "linux": {
+      "minimum": {
+        "os": "Most distributions",
+        "dependencies": "GTK3, ALSA or JACK",
+        "cpu": "x86_64 processor"
+      },
+      "notes": "Native Linux version available, excellent JACK integration"
+    }
+  },
+  "fileFormats": {
+    "import": [
+      "WAV", "AIFF", "MP3", "OGG", "FLAC", "WavPack", "MIDI", 
+      "MP4/M4A (with FFmpeg)", "Video formats (with FFmpeg)"
+    ],
+    "export": [
+      "WAV (various bit depths)", "AIFF", "MP3", "OGG Vorbis", 
+      "FLAC", "WavPack", "Video (with FFmpeg)"
+    ],
+    "projectFormat": {
+      "extension": ".rpp",
+      "description": "Plain text format, human-readable and version control friendly"
+    }
+  },
+  "learningResources": {
+    "official": [
+      {
+        "name": "REAPER User Guide",
+        "url": "https://www.reaper.fm/userguide.php",
+        "type": "PDF manual"
+      },
+      {
+        "name": "REAPER Blog",
+        "url": "https://reaper.fm/whatsnew.php",
+        "type": "Update notes"
+      }
+    ],
+    "community": [
+      {
+        "name": "Cockos Forums",
+        "url": "https://forum.cockos.com/",
+        "type": "Official forum"
+      },
+      {
+        "name": "r/Reaper",
+        "url": "https://reddit.com/r/reaper",
+        "type": "Reddit community"
+      },
+      {
+        "name": "REAPER Discord",
+        "type": "Community chat"
+      }
+    ],
+    "videoTutorials": [
+      {
+        "name": "REAPER Mania",
+        "platform": "YouTube",
+        "focus": "Comprehensive tutorials"
+      },
+      {
+        "name": "Kenny Gioia",
+        "platform": "YouTube/Groove3",
+        "focus": "Official REAPER videos"
+      },
+      {
+        "name": "The REAPER Blog",
+        "platform": "Website/YouTube",
+        "focus": "Tips and tricks"
+      }
+    ],
+    "books": [
+      {
+        "title": "The REAPER User Guide",
+        "author": "Geoffrey Francis",
+        "note": "Comprehensive reference"
+      },
+      {
+        "title": "Up and Running with REAPER",
+        "author": "Geoffrey Francis",
+        "note": "Beginner-friendly"
+      }
+    ]
+  },
+  "troubleshooting": {
+    "commonIssues": [
+      {
+        "issue": "High latency",
+        "solutions": [
+          "Reduce buffer size (try 128 samples)",
+          "Use ASIO driver on Windows",
+          "Check for plugins with high PDC",
+          "Disable WiFi and background processes"
+        ]
+      },
+      {
+        "issue": "Audio dropouts",
+        "solutions": [
+          "Increase buffer size slightly",
+          "Check CPU usage in Performance Meter",
+          "Freeze resource-heavy tracks",
+          "Disable unused tracks/plugins"
+        ]
+      },
+      {
+        "issue": "MIDI not responding",
+        "solutions": [
+          "Check MIDI device is enabled in Preferences",
+          "Verify MIDI channel matches",
+          "Use MIDI Monitor to see incoming data",
+          "Check 'Enable input for control messages'"
+        ]
+      },
+      {
+        "issue": "Looper not syncing",
+        "solutions": [
+          "Verify Super8/Playtime sync mode",
+          "Check project tempo is set",
+          "Ensure transport is running for synced mode",
+          "Try tap tempo to establish beat"
+        ]
+      }
+    ]
+  }
+}
