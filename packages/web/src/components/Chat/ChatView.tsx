@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { searchKnowledge } from '../../api/client';
-import { Send, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Send, Loader2, Sparkles, AlertCircle, Zap } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -9,27 +9,101 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_PROMPT = `You are Reapermadness - a friendly, knowledgeable REAPER DAW expert who specializes in live looping, Linux audio, and music production. You have deep expertise in:
+const SYSTEM_PROMPT = `You are Reapermadness - a friendly, passionate REAPER DAW expert who LIVES for live looping and helping musicians get the most out of REAPER. You're like that experienced friend who's been gigging with REAPER for years and knows all the tricks.
 
-- REAPER DAW (all features, shortcuts, actions, routing)
-- Super8 looper and live looping techniques
-- Linux audio setup (JACK, PipeWire, yabridge for Windows VSTs)
-- MIDI controllers and foot pedal setups for live performance
-- ReaPlugs (ReaEQ, ReaComp, ReaDelay, etc.)
-- SWS Extension, ReaPack, ReaLearn, Playtime 2
-- Audio troubleshooting (latency, dropouts, MIDI issues)
+## Your Deep Expertise:
 
-Your personality:
-- Enthusiastic about REAPER and helping musicians
-- Give practical, actionable advice
-- Include specific shortcuts, action IDs, or settings when relevant
-- Focus on live performance and looping since that's the user's main interest
-- Keep responses concise but thorough
-- Use occasional music/audio terminology naturally
+### Live Looping (YOUR SPECIALTY!)
+- Super8 Looper: Every parameter, MIDI mapping (C2-G2 for tracks, G#2 stop all, A#2 clear all), sync modes, overdub techniques
+- Looping workflows: Building layers, creating arrangements on the fly, syncing to tempo
+- Alternative loopers: Playtime 2, Mobius VST, MSuperLooper
+- Performance techniques: When to use free vs synced mode, managing loop lengths, live arrangement
 
-When you don't know something specific, be honest but helpful. Always try to point users in the right direction.
+### MIDI & Controllers
+- Foot controller setup (FCB1010, Morningstar MC6/MC8, Boss ES-8)
+- MIDI mapping strategies for hands-free operation
+- ReaLearn for complex mappings
+- Expression pedal assignments
 
-You'll be given context from the REAPER knowledge base to help answer questions. Use this context but also draw on your general knowledge to give complete, helpful answers.`;
+### Linux Audio (Critical for the user!)
+- JACK configuration for ultra-low latency
+- PipeWire as modern JACK replacement
+- yabridge for Windows VST/VST3 plugins
+- Troubleshooting xruns, permissions, realtime priority
+- Recommended distros and setups
+
+### REAPER Mastery
+- All shortcuts and when to use them
+- Action IDs for scripting and OSC control
+- Routing and signal flow
+- ReaPlugs and JSFX
+- SWS Extension power features
+- Custom actions and macros
+
+### Troubleshooting
+- Latency optimization
+- Audio dropout fixes
+- MIDI issues
+- Plugin problems
+- Performance tuning
+
+## Your Personality:
+- Enthusiastic and encouraging - you want Marc to succeed!
+- Practical - give specific steps, shortcuts, settings
+- Experienced - share tips from real gig experience
+- Patient with beginners but respect their intelligence
+- Use music terminology naturally
+
+## Important:
+- The user (Marc) is a Linux user doing live looping with jambands
+- He's new to this assistant, so be welcoming and show what you can do
+- Always mention specific MIDI notes, shortcuts, or action IDs when relevant
+- If he asks about controlling REAPER, remind him about the Looper tab where he can control Super8 directly!
+
+You'll be given context from the REAPER knowledge base. Use it alongside your expertise to give complete answers.`;
+
+const WELCOME_MESSAGE = `Hey Marc! 👋 I'm **Reapermadness**, your personal REAPER expert!
+
+I'm here to help you with everything REAPER, especially **live looping** - that's my jam! Here's what I can do for you:
+
+🎛️ **Ask Me Anything**
+• "How do I set up Super8 for a live gig?"
+• "What's the best foot controller for looping?"
+• "Help me fix audio latency on Linux"
+• "What shortcuts should I memorize?"
+
+🔧 **I Know Your Setup**
+• Linux audio (JACK, PipeWire, yabridge)
+• Super8 looper inside and out
+• MIDI mapping for hands-free control
+• Low-latency performance tuning
+
+🎮 **Check Out the Looper Tab!**
+I can also CONTROL your REAPER directly! Switch to the **Looper** tab to:
+• Trigger Super8 tracks 1-8
+• Control transport (play/stop/record)
+• Set tempo on the fly
+• Stop/clear all loops instantly
+
+💡 **Pro Tip**: Connect your server in Settings, and you can control REAPER from your phone during a gig!
+
+What would you like to dive into first?`;
+
+const WELCOME_MESSAGE_NO_API = `Hey! 👋 I'm **Reapermadness**, your REAPER knowledge base.
+
+I can search through tons of info about:
+• Super8 looper & live looping
+• Linux audio (JACK, PipeWire, yabridge)
+• REAPER shortcuts & actions
+• Troubleshooting tips
+
+🎮 **Check the Looper Tab!**
+You can control REAPER directly from there - trigger loops, transport, tempo!
+
+⚡ **Want smarter answers?**
+Add your Anthropic API key in Settings and I'll give you conversational, expert responses instead of just search results!
+
+Try asking something like "How do I set up Super8?"`;
 
 export function ChatView() {
   const { apiKey } = useAppStore();
@@ -38,9 +112,7 @@ export function ChatView() {
     {
       id: '1',
       role: 'assistant',
-      content: apiKey
-        ? "Hey! I'm Reapermadness, your REAPER expert. Ask me anything about REAPER, live looping, Super8, Linux audio setup, or troubleshooting. I've got you covered! 🎛️"
-        : "Hey! I'm Reapermadness. I can search the knowledge base for REAPER info. For smarter conversational answers, add your Anthropic API key in Settings!",
+      content: apiKey ? WELCOME_MESSAGE : WELCOME_MESSAGE_NO_API,
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,7 +163,7 @@ export function ChatView() {
         // Fallback to knowledge base only
         response = knowledgeContext
           ? formatKnowledgeResponse(knowledgeContext)
-          : "I couldn't find specific info on that. Try asking about Super8 looper, JACK/PipeWire setup, REAPER shortcuts, or troubleshooting latency issues. Or add your API key in Settings for smarter answers!";
+          : "I couldn't find specific info on that. Try asking about Super8 looper, JACK/PipeWire setup, REAPER shortcuts, or troubleshooting. Or add your API key in Settings for smarter answers!";
       }
 
       const assistantMessage: Message = {
@@ -106,7 +178,7 @@ export function ChatView() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Sorry, I hit a snag there. Make sure your API key is correct in Settings, or try asking something else!",
+        content: "Oops, hit a snag there! Make sure your API key is correct in Settings. Or try rephrasing your question!",
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -115,22 +187,22 @@ export function ChatView() {
   };
 
   const quickQueries = [
-    'How do I set up Super8 for live looping?',
-    'Best JACK settings for low latency?',
-    'How do I use yabridge for Windows VSTs?',
-    'What MIDI notes control Super8?',
-    "What's the shortcut to split items?",
-    'Help with audio dropouts',
+    { label: '🎸 Super8 setup', query: 'How do I set up Super8 for live looping?' },
+    { label: '🎹 MIDI mapping', query: 'What MIDI notes control Super8 tracks?' },
+    { label: '🐧 Linux audio', query: 'How do I set up JACK for low latency on Linux?' },
+    { label: '🦶 Foot controllers', query: 'What foot controller do you recommend for looping?' },
+    { label: '⚡ Fix latency', query: 'How do I reduce latency for live performance?' },
+    { label: '🔌 Windows VSTs', query: 'How do I run Windows VST plugins on Linux with yabridge?' },
   ];
 
   return (
     <div className="flex flex-col h-[calc(100vh-280px)] min-h-[400px]">
       {/* API Key Notice */}
       {!apiKey && (
-        <div className="mb-4 p-3 bg-yellow-900/30 border border-yellow-600/50 rounded-lg flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-yellow-200">
-            <span className="font-medium">Limited mode:</span> Add your Anthropic API key in Settings for intelligent, conversational answers from Reapermadness!
+        <div className="mb-4 p-3 bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/50 rounded-lg flex items-start gap-2">
+          <Zap className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-purple-200">
+            <span className="font-medium">Unlock full power:</span> Add your Anthropic API key in Settings for intelligent, conversational expert answers!
           </div>
         </div>
       )}
@@ -150,7 +222,7 @@ export function ChatView() {
               }`}
             >
               {message.role === 'assistant' && (
-                <div className="flex items-center gap-2 mb-1 text-reaper-accent text-xs font-medium">
+                <div className="flex items-center gap-2 mb-2 text-reaper-accent text-xs font-medium">
                   <Sparkles className="w-3 h-3" />
                   Reapermadness
                 </div>
@@ -174,13 +246,13 @@ export function ChatView() {
 
       {/* Quick queries */}
       <div className="flex flex-wrap gap-2 mb-3">
-        {quickQueries.map((query) => (
+        {quickQueries.map(({ label, query }) => (
           <button
-            key={query}
+            key={label}
             onClick={() => setInput(query)}
             className="px-3 py-1.5 text-xs rounded-full bg-reaper-surface border border-reaper-border hover:border-reaper-accent hover:text-reaper-accent transition-colors"
           >
-            {query}
+            {label}
           </button>
         ))}
       </div>
@@ -259,7 +331,7 @@ async function callClaude(
 // Format knowledge base results when no API key
 function formatKnowledgeResponse(context: string): string {
   const lines = context.split('\n\n').slice(0, 4);
-  let response = "Here's what I found in the knowledge base:\n\n";
+  let response = "Here's what I found:\n\n";
 
   for (const line of lines) {
     const match = line.match(/\[([^\]]+)\]: (.+)/);
@@ -269,6 +341,8 @@ function formatKnowledgeResponse(context: string): string {
       response += line + '\n\n';
     }
   }
+
+  response += "\n💡 *Add your API key in Settings for more detailed, conversational answers!*";
 
   return response.trim();
 }
