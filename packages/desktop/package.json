@@ -1,6 +1,6 @@
 {
   "name": "reapermadness",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "REAPER Assistant - Your AI-powered REAPER expert",
   "main": "main.js",
   "author": "Reapermadness",
@@ -38,9 +38,8 @@
     ],
     "extraResources": [
       {
-        "from": "../server/dist",
-        "to": "server",
-        "filter": ["**/*"]
+        "from": "../server/dist/server-bundle.cjs",
+        "to": "server/server-bundle.cjs"
       },
       {
         "from": "../server/src/knowledge",

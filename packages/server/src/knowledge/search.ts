@@ -1,12 +1,18 @@
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Load knowledge base - KNOWLEDGE_PATH env var is set by Electron, 
+// otherwise look relative to cwd (for dev) or same directory as script
+function findDataPath(): string {
+  if (process.env.KNOWLEDGE_PATH) {
+    return join(process.env.KNOWLEDGE_PATH, 'data.json');
+  }
+  // For development / standalone server
+  return join(process.cwd(), 'src', 'knowledge', 'data.json');
+}
 
-// Load knowledge base
-const dataPath = join(__dirname, 'data.json');
+const dataPath = findDataPath();
+console.log('Loading knowledge base from:', dataPath);
 export const knowledgeBase = JSON.parse(readFileSync(dataPath, 'utf-8'));
 
 export interface SearchResult {

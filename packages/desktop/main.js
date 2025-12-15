@@ -49,15 +49,18 @@ function waitForServer(port, timeout = 30000) {
 // Start the server
 async function startServer() {
   return new Promise((resolve, reject) => {
+    // In dev mode, use the regular dist/index.js (with node_modules available)
+    // In production, use the bundled single-file server
     const serverPath = isDev
       ? path.join(__dirname, '..', 'server', 'dist', 'index.js')
-      : path.join(process.resourcesPath, 'server', 'index.js');
+      : path.join(process.resourcesPath, 'server', 'server-bundle.cjs');
 
     const knowledgePath = isDev
       ? path.join(__dirname, '..', 'server', 'src', 'knowledge')
       : path.join(process.resourcesPath, 'server', 'knowledge');
 
     console.log('Starting server from:', serverPath);
+    console.log('Knowledge path:', knowledgePath);
 
     // Spawn server process
     serverProcess = spawn('node', [serverPath], {
