@@ -21,7 +21,7 @@
   },
   "build": {
     "appId": "com.reapermadness.app",
-    "productName": "Reapermadness",
+    "productName": "Reaper Madness",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -73,7 +73,7 @@
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Reapermadness"
+      "shortcutName": "Reaper Madness"
     }
   }
 }
