@@ -64,7 +64,7 @@ export const useAppStore = create<AppState>()(
       loopTracks: initialLoopTracks,
       oscHost: '127.0.0.1',
       oscPort: 8000,
-      apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
+      apiKey: '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',
 
       // Actions
       setView: (view) => set({ currentView: view }),
