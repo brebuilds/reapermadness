@@ -1,6 +1,6 @@
 import { useAppStore, LoopTrackState } from '../../stores/appStore';
 import { looperTriggerTrack, looperStopAll, looperClearAll } from '../../api/client';
-import { Circle, Square, Trash2, StopCircle } from 'lucide-react';
+import { Circle, Trash2, StopCircle } from 'lucide-react';
 
 interface LooperDashboardProps {
   large?: boolean;
@@ -32,7 +32,7 @@ export function LooperDashboard({ large }: LooperDashboardProps) {
         default:
           newState = 'recording';
       }
-      setLoopTrackState(trackId, newState, newState !== 'empty');
+      setLoopTrackState(trackId, newState, true);
     }
   };
 

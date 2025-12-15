@@ -1,8 +1,8 @@
 import { startMCPServer } from './mcp/server.js';
 import { startHTTPServer } from './api/server.js';
 
-// Detect if running as MCP (stdio) or HTTP server
-const isMCP = process.argv.includes('--mcp') || !process.stdin.isTTY;
+// Only run MCP mode if explicitly requested with --mcp flag
+const isMCP = process.argv.includes('--mcp');
 
 async function main() {
   if (isMCP) {
