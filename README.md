@@ -1,165 +1,209 @@
-# REAPER Knowledge Package 📦
+# REAPER Knowledge Assistant 🎛️
 
-A comprehensive knowledge base and tools for learning and using REAPER DAW, optimized for AI assistants and chatbots.
+A comprehensive REAPER DAW assistant for Linux users focused on live looping and performance. Features an MCP server for Claude Desktop, React web app with looper dashboard, and OSC control of REAPER.
 
-## 📁 What's Included
+## ✨ Features
+
+- **Knowledge Base**: Comprehensive REAPER documentation with Super8 looper, Linux audio setup, actions, and troubleshooting
+- **MCP Server**: 20+ tools for Claude Desktop integration
+- **React Dashboard**: Visual 8-track looper control, transport, tempo
+- **OSC Control**: Direct control of REAPER transport and looper
+- **Performance Mode**: Stage-friendly dark UI with large touch targets
+- **Linux Focus**: JACK, PipeWire, and yabridge setup guides
+
+## 📁 Project Structure
 
 ```
-reaper-knowledge-package/
-├── knowledge-base/
-│   ├── reaper-knowledge-base.json    # Structured data (for RAG/embedding)
-│   └── reaper-knowledge-base.md      # Human-readable (for Claude Projects)
-├── mcp-server/                        # MCP Server for Claude Desktop
-│   ├── src/index.ts
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── data/reaper-knowledge-base.json
-├── streamlit-app/                     # Web chat interface
-│   ├── streamlit_app.py
-│   ├── requirements.txt
-│   └── data/reaper-knowledge-base.json
-├── templates/                         # REAPER project templates
-│   └── Solo-Guitar-Looper.RPP
-└── README.md
+reaper-assistant/
+├── packages/
+│   ├── server/           # MCP server + Express API + OSC client
+│   │   └── src/
+│   │       ├── mcp/      # MCP server implementation
+│   │       ├── api/      # Express REST API
+│   │       ├── osc/      # REAPER OSC client
+│   │       └── knowledge/# Knowledge base + search
+│   └── web/              # React frontend
+│       └── src/
+│           ├── components/
+│           │   ├── Looper/    # Super8 dashboard
+│           │   ├── Transport/ # Play/stop/record
+│           │   └── Chat/      # Knowledge search
+│           └── stores/   # Zustand state
+├── templates/            # REAPER project files
+├── scripts/              # Lua scripts for REAPER
+├── docs/                 # Setup guides
+└── knowledge-base/       # Standalone knowledge files
 ```
 
-## 🚀 Quick Start Options
+## 🚀 Quick Start
 
-### Option A: Claude Project (Easiest!)
-1. Go to [claude.ai](https://claude.ai)
-2. Create a new Project
-3. Upload `knowledge-base/reaper-knowledge-base.md`
-4. Add this Project Instruction:
-   ```
-   You are a REAPER DAW expert assistant. Use the uploaded knowledge base 
-   to answer questions about REAPER features, plugins, extensions, live 
-   looping, shortcuts, and workflows. Be helpful, accurate, and provide 
-   practical guidance.
-   ```
-5. Start chatting!
+### Prerequisites
+- Node.js 18+
+- pnpm 8+
+- REAPER with OSC enabled
 
-### Option B: MCP Server (Claude Desktop)
+### Installation
+
 ```bash
-cd mcp-server
-npm install
-npm run build
+# Clone and install
+git clone <repo-url>
+cd reaper-assistant
+pnpm install
+
+# Start development (both server and web)
+pnpm dev
 ```
 
-Add to Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+### Configure REAPER OSC
+
+1. Open REAPER Preferences (`Ctrl+P`)
+2. Go to **Control/OSC/Web**
+3. Click **Add** → **OSC**
+4. Configure:
+   - Local listen port: `8000`
+   - Device IP: `127.0.0.1`
+   - Device port: `9000`
+5. Click OK and restart REAPER
+
+See [docs/REAPER-OSC-Setup.md](docs/REAPER-OSC-Setup.md) for detailed instructions.
+
+### Open the Web App
+
+Navigate to http://localhost:5173
+
+- **Dashboard**: Control Super8 looper tracks and transport
+- **Chat**: Search the knowledge base
+- **Settings**: Configure OSC connection
+
+## 🎮 Super8 Looper Control
+
+The dashboard provides visual control of Super8's 8 tracks:
+
+| Button | Action |
+|--------|--------|
+| Track 1-8 | Record/Play/Overdub |
+| Stop All | Stop all tracks |
+| Clear All | Clear all loops |
+
+MIDI note mappings:
+- **C2-G2**: Tracks 1-8
+- **G#2**: Stop All
+- **A#2**: Clear All
+
+## 🔧 MCP Server for Claude Desktop
+
+Install as an MCP server for Claude Desktop:
+
 ```json
 {
   "mcpServers": {
     "reaper": {
       "command": "node",
-      "args": ["/path/to/reaper-knowledge-package/mcp-server/dist/index.js"]
+      "args": ["/path/to/reaper-assistant/packages/server/dist/index.js", "--mcp"]
     }
   }
 }
 ```
 
-Restart Claude Desktop. Now you have 14 specialized REAPER tools!
+### Available Tools
 
-### Option C: Streamlit Chat Interface
+**Knowledge Tools:**
+- `reaper_search` - Natural language search
+- `reaper_get_super8` - Super8 looper documentation
+- `reaper_get_linux_setup` - JACK/PipeWire/yabridge guides
+- `reaper_get_action` - Find actions by ID or name
+- `reaper_get_shortcuts` - Keyboard shortcuts
+- `reaper_get_troubleshooting` - Common issues
+
+**Control Tools:**
+- `reaper_play`, `reaper_stop`, `reaper_record`
+- `reaper_set_tempo`
+- `reaper_trigger_action`
+- `reaper_loop_track`, `reaper_loop_stop_all`, `reaper_loop_clear_all`
+
+## 🎸 Templates & Scripts
+
+### REAPER Templates
+
+- `Solo-Guitar-Looper.RPP` - Single instrument looping setup
+- `Jamband-4Track.RPP` - 4 inputs with separate loopers
+- `Podcast-2Person.RPP` - Two-person podcast template
+
+### Lua Scripts
+
+- `Create_Looping_Setup.lua` - Auto-create looping session
+- `Set_Buffer_For_Live.lua` - Optimize for low latency
+- `Quick_Add_Track_With_Input.lua` - Add monitored track
+- `Export_Stems.lua` - Export all tracks as stems
+- `Toggle_All_Track_Monitoring.lua` - Toggle monitoring
+
+To install scripts: Copy to REAPER's Scripts folder and add to Actions list.
+
+## 🐧 Linux Audio Setup
+
+For best performance with live looping on Linux:
+
+1. **Use JACK or PipeWire** (not plain PulseAudio)
+2. **Set buffer to 128-256 samples**
+3. **Configure realtime privileges**
+
+See [docs/Linux-Audio-Setup.md](docs/Linux-Audio-Setup.md) for complete guide.
+
+## 📝 Commands
+
 ```bash
-cd streamlit-app
-pip install -r requirements.txt
-streamlit run streamlit_app.py
+# Development
+pnpm dev              # Run both server and web
+pnpm dev:server       # Server only
+pnpm dev:web          # Web only
+
+# Build
+pnpm build            # Build all packages
+
+# Production
+pnpm start            # Start HTTP server
+pnpm start:mcp        # Start MCP server (stdio)
 ```
 
-Opens a beautiful web chat interface at `http://localhost:8501`
+## 🔌 Environment Variables
 
-## 🛠️ MCP Server Tools
+**Server** (`packages/server/.env`):
+```env
+PORT=3001
+OSC_HOST=127.0.0.1
+OSC_PORT=8000
+OSC_LISTEN_PORT=9000
+```
 
-The MCP server provides these tools:
+**Web** (`packages/web/.env.local`):
+```env
+VITE_API_URL=http://localhost:3001
+VITE_ANTHROPIC_API_KEY=  # Optional, for Claude chat
+```
 
-| Tool | Description |
-|------|-------------|
-| `reaper_search` | Natural language search across all knowledge |
-| `reaper_get_overview` | What is REAPER, platforms, use cases |
-| `reaper_get_pricing` | Licensing and pricing info |
-| `reaper_get_features` | Core features and v7 highlights |
-| `reaper_get_plugin_info` | Built-in plugins (ReaPlugs, JSFX) |
-| `reaper_get_extension_info` | Extensions (SWS, ReaPack, Playtime, ReaLearn) |
-| `reaper_get_scripting_info` | ReaScript capabilities |
-| `reaper_get_theme_info` | Themes and customization |
-| `reaper_get_shortcuts` | Keyboard shortcuts by category |
-| `reaper_get_live_looping` | Live looping setups and tips |
-| `reaper_get_workflow_info` | Podcast, audiobook, film workflows |
-| `reaper_get_learning_resources` | Tutorials and documentation |
-| `reaper_get_system_requirements` | Requirements by platform |
-| `reaper_get_troubleshooting` | Common issues and solutions |
+## 🎯 Use Cases
 
-## 📚 Knowledge Base Contents
+- **Live Looping Performance**: Control Super8 from web dashboard or foot controller via MIDI
+- **Learning REAPER**: Ask natural language questions about features, shortcuts, workflows
+- **Linux Audio Help**: Get help with JACK, PipeWire, and yabridge setup
+- **Session Setup**: Use templates and scripts to quickly create projects
+- **AI-Powered Control**: Use MCP server with Claude Desktop for voice/chat control
 
-### Topics Covered
-- **Overview**: What REAPER is, philosophy, platforms
-- **Pricing**: $60/$225 licensing, trial info
-- **Features**: Core features, v7 highlights, routing
-- **Plugins**: All ReaPlugs (ReaEQ, ReaComp, etc.) + JSFX
-- **Extensions**: SWS, ReaPack, Playtime 2, ReaLearn
-- **Scripting**: Lua, EEL2, Python capabilities
-- **Themes**: Popular themes and customization
-- **Shortcuts**: 700+ keyboard shortcuts
-- **Live Looping**: Super8, Playtime, Mobius, hardware
-- **Workflows**: Podcast, audiobook, film/video
-- **System Requirements**: Windows, macOS, Linux
-- **Troubleshooting**: Common issues and fixes
-- **Learning Resources**: Tutorials, books, communities
+## 📚 Documentation
 
-## 🎸 Live Looping Focus
+- [REAPER OSC Setup](docs/REAPER-OSC-Setup.md)
+- [Linux Audio Setup](docs/Linux-Audio-Setup.md)
 
-Special attention to live performance:
+## 🙏 Credits
 
-- **Super8 Looper**: Built-in 8-track looper with MIDI mapping
-- **Playtime 2**: Ableton-style clip launching
-- **Hardware**: Foot controller recommendations
-- **Templates**: Ready-to-use looping setups
-- **Performance Tips**: Latency optimization, workflow
-
-## 🎹 REAPER Templates
-
-The `templates/` folder includes ready-to-use REAPER projects:
-
-- **Solo-Guitar-Looper.RPP**: Guitar input → Super8 → Master FX
-
-To use: Open in REAPER (File > Open Project)
-
-## 📝 Example Queries
-
-Try asking:
-- "What does REAPER cost?"
-- "How do I set up Super8 for live looping?"
-- "What keyboard shortcut splits items?"
-- "Tell me about the SWS extension"
-- "How do I set up for podcast editing?"
-- "What are the system requirements for Mac?"
-- "Help with audio latency issues"
-
-## 🔧 Customization
-
-### Adding Knowledge
-Edit `reaper-knowledge-base.json` to add:
-- New plugins
-- Custom workflows
-- Additional shortcuts
-- Community scripts
-
-### Extending the MCP Server
-Add new tools in `mcp-server/src/index.ts`:
-1. Add tool definition to `tools` array
-2. Add handler in `switch` statement
-3. Rebuild: `npm run build`
+- Built for Marc and Linux live loopers everywhere
+- Knowledge compiled from reaper.fm and community resources
+- REAPER is developed by Cockos Incorporated
 
 ## 📄 License
 
 MIT License - Free to use, modify, and share!
 
-## 🙏 Credits
-
-- Knowledge compiled from [reaper.fm](https://reaper.fm) and community resources
-- Built by Bre & Claude
-- REAPER is developed by Cockos Incorporated
-
 ---
 
-**Happy REAPER-ing! 🎛️**
+**Happy looping! 🎛️🎸**
