@@ -1,6 +1,3 @@
 {
-  "buildCommand": "pnpm build:web",
-  "outputDirectory": "packages/web/dist",
-  "installCommand": "pnpm install",
-  "framework": "vite"
+  "outputDirectory": "docs/landing"
 }
