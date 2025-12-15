@@ -5,6 +5,10 @@
   "main": "main.js",
   "author": "Reapermadness",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brebuilds/reapermadness"
+  },
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
