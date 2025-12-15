@@ -191,13 +191,135 @@ const tools = [
     description: 'Clear all Super8 looper tracks',
     inputSchema: { type: 'object', properties: {} },
   },
+  // Project Management Tools
+  {
+    name: 'reaper_undo',
+    description: 'Undo the last action in REAPER',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_redo',
+    description: 'Redo the last undone action in REAPER',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_save_project',
+    description: 'Save the current REAPER project',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_insert_track',
+    description: 'Insert a new track in REAPER',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  // Navigation Tools
+  {
+    name: 'reaper_add_marker',
+    description: 'Add a marker at the current playback position',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_goto_marker',
+    description: 'Jump to a specific marker number (1-10)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        marker: { type: 'number', description: 'Marker number 1-10' },
+      },
+      required: ['marker'],
+    },
+  },
+  {
+    name: 'reaper_next_marker',
+    description: 'Jump to the next marker',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_prev_marker',
+    description: 'Jump to the previous marker',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_goto_start',
+    description: 'Go to the beginning of the project',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_goto_end',
+    description: 'Go to the end of the project',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  // Track Tools
+  {
+    name: 'reaper_select_track',
+    description: 'Select a track by number',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number (1-based)' },
+      },
+      required: ['track'],
+    },
+  },
+  {
+    name: 'reaper_arm_track',
+    description: 'Arm or disarm a track for recording',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number (1-based)' },
+        armed: { type: 'boolean', description: 'True to arm, false to disarm' },
+      },
+      required: ['track', 'armed'],
+    },
+  },
+  {
+    name: 'reaper_mute_track',
+    description: 'Mute or unmute a track',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number (1-based)' },
+        muted: { type: 'boolean', description: 'True to mute, false to unmute' },
+      },
+      required: ['track', 'muted'],
+    },
+  },
+  {
+    name: 'reaper_solo_track',
+    description: 'Solo or unsolo a track',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number (1-based)' },
+        soloed: { type: 'boolean', description: 'True to solo, false to unsolo' },
+      },
+      required: ['track', 'soloed'],
+    },
+  },
+  // Zoom & View Tools
+  {
+    name: 'reaper_zoom_in',
+    description: 'Zoom in on the timeline',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_zoom_out',
+    description: 'Zoom out on the timeline',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'reaper_zoom_fit',
+    description: 'Zoom to fit all items in view',
+    inputSchema: { type: 'object', properties: {} },
+  },
 ];
 
 export async function startMCPServer(): Promise<void> {
   const server = new Server(
     {
       name: 'reaper-assistant',
-      version: '1.0.0',
+      version: '1.0.4',
     },
     {
       capabilities: {
@@ -353,6 +475,108 @@ export async function startMCPServer(): Promise<void> {
         case 'reaper_loop_clear_all':
           oscClient.loopClearAll();
           result = { success: true, action: 'All Super8 tracks cleared' };
+          break;
+
+        // Project Management
+        case 'reaper_undo':
+          oscClient.triggerAction(40029); // Edit: Undo
+          result = { success: true, action: 'Undo executed' };
+          break;
+
+        case 'reaper_redo':
+          oscClient.triggerAction(40030); // Edit: Redo
+          result = { success: true, action: 'Redo executed' };
+          break;
+
+        case 'reaper_save_project':
+          oscClient.triggerAction(40026); // File: Save project
+          result = { success: true, action: 'Project saved' };
+          break;
+
+        case 'reaper_insert_track':
+          oscClient.triggerAction(40001); // Track: Insert new track
+          result = { success: true, action: 'New track inserted' };
+          break;
+
+        // Navigation
+        case 'reaper_add_marker':
+          oscClient.triggerAction(40157); // Markers: Insert marker at current position
+          result = { success: true, action: 'Marker added at current position' };
+          break;
+
+        case 'reaper_goto_marker':
+          const marker = args?.marker as number;
+          if (marker >= 1 && marker <= 10) {
+            // Action IDs 40161-40170 are "Go to marker 01-10"
+            oscClient.triggerAction(40160 + marker);
+            result = { success: true, action: `Jumped to marker ${marker}` };
+          } else {
+            result = { error: 'Marker must be between 1 and 10' };
+          }
+          break;
+
+        case 'reaper_next_marker':
+          oscClient.triggerAction(40173); // Markers: Go to next marker/project end
+          result = { success: true, action: 'Jumped to next marker' };
+          break;
+
+        case 'reaper_prev_marker':
+          oscClient.triggerAction(40172); // Markers: Go to previous marker/project start
+          result = { success: true, action: 'Jumped to previous marker' };
+          break;
+
+        case 'reaper_goto_start':
+          oscClient.goToStart();
+          result = { success: true, action: 'Jumped to project start' };
+          break;
+
+        case 'reaper_goto_end':
+          oscClient.triggerAction(40043); // Transport: Go to end of project
+          result = { success: true, action: 'Jumped to project end' };
+          break;
+
+        // Track controls
+        case 'reaper_select_track':
+          const selectTrack = args?.track as number;
+          oscClient.selectTrack(selectTrack);
+          result = { success: true, action: `Selected track ${selectTrack}` };
+          break;
+
+        case 'reaper_arm_track':
+          const armTrack = args?.track as number;
+          const armed = args?.armed as boolean;
+          oscClient.setTrackRecordArm(armTrack, armed);
+          result = { success: true, action: `Track ${armTrack} ${armed ? 'armed' : 'disarmed'}` };
+          break;
+
+        case 'reaper_mute_track':
+          const muteTrack = args?.track as number;
+          const muted = args?.muted as boolean;
+          oscClient.setTrackMute(muteTrack, muted);
+          result = { success: true, action: `Track ${muteTrack} ${muted ? 'muted' : 'unmuted'}` };
+          break;
+
+        case 'reaper_solo_track':
+          const soloTrack = args?.track as number;
+          const soloed = args?.soloed as boolean;
+          oscClient.setTrackSolo(soloTrack, soloed);
+          result = { success: true, action: `Track ${soloTrack} ${soloed ? 'soloed' : 'unsoloed'}` };
+          break;
+
+        // Zoom & View
+        case 'reaper_zoom_in':
+          oscClient.triggerAction(1012); // View: Zoom in horizontal
+          result = { success: true, action: 'Zoomed in' };
+          break;
+
+        case 'reaper_zoom_out':
+          oscClient.triggerAction(1011); // View: Zoom out horizontal
+          result = { success: true, action: 'Zoomed out' };
+          break;
+
+        case 'reaper_zoom_fit':
+          oscClient.triggerAction(40295); // View: Zoom to fit all items in project
+          result = { success: true, action: 'Zoomed to fit all items' };
           break;
 
         default:

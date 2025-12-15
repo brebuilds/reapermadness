@@ -163,6 +163,10 @@ export class ReaperOSCClient {
     this.send(`/track/${trackNum}/recarm`, [{ type: 'i', value: armed ? 1 : 0 }]);
   }
 
+  selectTrack(trackNum: number): void {
+    this.send(`/track/${trackNum}/select`, [{ type: 'i', value: 1 }]);
+  }
+
   // Super8 Looper controls (via MIDI notes)
   private sendMidiNote(note: number, velocity: number = 127): void {
     // Send MIDI via OSC virtual keyboard
