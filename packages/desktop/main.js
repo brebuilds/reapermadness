@@ -126,8 +126,29 @@ function createWindow() {
   } else {
     // In production, load the built files
     const webPath = path.join(process.resourcesPath, 'web', 'index.html');
-    mainWindow.loadFile(webPath);
+    console.log('Loading web from:', webPath);
+    
+    // Check if file exists
+    const fs = require('fs');
+    if (!fs.existsSync(webPath)) {
+      console.error('ERROR: Web files not found at:', webPath);
+      console.error('Resources path:', process.resourcesPath);
+      console.error('Contents:', fs.readdirSync(process.resourcesPath));
+    }
+    
+    mainWindow.loadFile(webPath).catch(err => {
+      console.error('Failed to load web content:', err);
+    });
   }
+  
+  // Debug: log any page errors
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Page failed to load:', errorCode, errorDescription);
+  });
+  
+  mainWindow.webContents.on('console-message', (event, level, message) => {
+    console.log('Web console:', message);
+  });
 
   // Open external links in default browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
