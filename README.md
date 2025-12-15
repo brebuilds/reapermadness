@@ -1,109 +1,135 @@
-# REAPER Knowledge Assistant 🎛️
+# Reapermadness 🎛️
 
-A comprehensive REAPER DAW assistant focused on live looping and performance. Features an MCP server for Claude Desktop, React web app with looper dashboard, and OSC control of REAPER.
+Your AI-powered REAPER assistant for live looping and music production.
 
-## ✨ Features
+## 🚀 Quick Start (Easiest Way)
 
-- **AI Chat (Reapermadness)**: Ask natural language questions and get expert answers about REAPER
-- **Knowledge Base**: Comprehensive documentation with Super8 looper, audio setup, actions, and troubleshooting
-- **MCP Server**: 20+ tools for Claude Desktop integration
-- **React Dashboard**: Visual 8-track looper control, transport, tempo
-- **OSC Control**: Direct control of REAPER transport and looper
-- **Performance Mode**: Stage-friendly dark UI with large touch targets
+### Step 1: Install Prerequisites
+- [Node.js 18+](https://nodejs.org/) - Download and install
+- [pnpm](https://pnpm.io/) - Run: `npm install -g pnpm`
 
-## 📁 Project Structure
-
-```
-reaper-assistant/
-├── packages/
-│   ├── server/           # MCP server + Express API + OSC client
-│   │   └── src/
-│   │       ├── mcp/      # MCP server implementation
-│   │       ├── api/      # Express REST API
-│   │       ├── osc/      # REAPER OSC client
-│   │       └── knowledge/# Knowledge base + search
-│   └── web/              # React frontend
-│       └── src/
-│           ├── components/
-│           │   ├── Looper/    # Super8 dashboard
-│           │   ├── Transport/ # Play/stop/record
-│           │   └── Chat/      # AI chat with Reapermadness
-│           └── stores/   # Zustand state
-├── templates/            # REAPER project files
-├── scripts/              # Lua scripts for REAPER
-└── docs/                 # Setup guides
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- pnpm 8+
-- REAPER with OSC enabled
-
-### Installation
-
+### Step 2: Download & Run
 ```bash
-# Clone and install
 git clone <repo-url>
 cd reapermadness
 pnpm install
-
-# Start development (both server and web)
 pnpm dev
 ```
 
-Open http://localhost:5173 in your browser.
+### Step 3: Open in Browser
+Go to **http://localhost:5173**
 
-### Configure REAPER OSC
-
-1. Open REAPER Preferences (`Ctrl+P`)
+### Step 4: Enable OSC in REAPER (one-time)
+1. Open REAPER → Preferences (`Ctrl+P`)
 2. Go to **Control/OSC/Web**
-3. Click **Add** → **OSC**
-4. Configure:
-   - Mode: **Local**
-   - Local listen port: `8000`
-5. Click OK
+3. Click **Add**
+4. Set **Mode: OSC (Open Sound Control)**
+5. Set **Local listen port: 8000**
+6. Click OK
 
-See [docs/REAPER-OSC-Setup.md](docs/REAPER-OSC-Setup.md) for detailed instructions.
+**That's it!** Chat with Reapermadness, control your looper, and jam!
 
-## 🎛️ The Web App
+---
 
-### Three Tabs:
+## 🖥️ Build Desktop App (Windows Installer)
 
-- **Looper**: Visual 8-track Super8 control with big touch-friendly buttons
-- **Chat**: Talk to Reapermadness - your AI REAPER expert
-- **Settings**: Configure server URL, OSC settings, add your Anthropic API key
+Want a double-click installer? Build the Electron app:
 
-### Performance Mode
-Hit the expand button in the header for a minimal stage-friendly UI with giant looper buttons.
+```bash
+# Install dependencies
+pnpm install
 
-### Chat with Reapermadness
-Add your Anthropic API key in Settings to unlock intelligent, conversational answers about:
-- Super8 looper setup and techniques
-- ASIO and audio configuration
-- MIDI mapping for foot controllers
-- REAPER shortcuts and workflows
-- Troubleshooting
+# Build Windows installer
+pnpm build:desktop:win
+```
 
-## 🎮 Super8 Looper Control
+The installer will be in `packages/desktop/dist/`. Double-click to install Reapermadness like any Windows app!
 
-The dashboard provides visual control of Super8's 8 tracks:
+---
 
-| Button | Action |
-|--------|--------|
-| Track 1-8 | Record/Play/Overdub |
-| Stop All | Stop all tracks |
-| Clear All | Clear all loops |
+## ✨ Features
 
-MIDI note mappings:
-- **C2-G2**: Tracks 1-8
-- **G#2**: Stop All
-- **A#2**: Clear All
+### 💬 Chat with Reapermadness
+Your personal REAPER expert! Ask anything:
+- "How do I set up Super8 for live looping?"
+- "What's the best foot controller?"
+- "Help me fix latency"
+- "What shortcuts should I know?"
 
-## 🔧 MCP Server for Claude Desktop
+### 🎮 Visual Looper Control
+8-track Super8 dashboard with big buttons:
+- Tap to record/play/overdub
+- Stop All / Clear All
+- Works on phone too!
 
-Install as an MCP server for Claude Desktop:
+### 🎚️ Transport Controls
+- Play / Stop / Record
+- Set tempo
+- Toggle repeat
+
+### 🌙 Performance Mode
+Hit the expand button for a minimal, stage-friendly UI with giant buttons.
+
+---
+
+## 🎛️ MIDI Mappings (Super8)
+
+| MIDI Note | Action |
+|-----------|--------|
+| C2 (36) | Track 1 |
+| C#2 (37) | Track 2 |
+| D2 (38) | Track 3 |
+| D#2 (39) | Track 4 |
+| E2 (40) | Track 5 |
+| F2 (41) | Track 6 |
+| F#2 (42) | Track 7 |
+| G2 (43) | Track 8 |
+| G#2 (44) | Stop All |
+| A#2 (46) | Clear All |
+
+---
+
+## 📝 All Commands
+
+```bash
+# Development
+pnpm dev              # Run everything (recommended)
+pnpm dev:server       # Server only
+pnpm dev:web          # Web UI only
+
+# Build
+pnpm build            # Build all
+pnpm build:desktop:win # Build Windows installer
+
+# Other
+pnpm start            # Run server only (production)
+pnpm start:mcp        # MCP mode for Claude Desktop
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Chat not working?
+1. Make sure you see "HTTP mode" in terminal (not "MCP mode")
+2. Clear browser localStorage: `localStorage.removeItem('reaper-assistant-settings')`
+3. Refresh the page
+
+### REAPER not responding?
+1. Check OSC is enabled in REAPER Preferences → Control/OSC/Web
+2. Make sure port is **8000**
+3. Restart REAPER after enabling OSC
+
+### Server won't start?
+1. Make sure nothing else is using port 3001
+2. Try: `pnpm install` again
+3. Check Node.js is version 18+: `node --version`
+
+---
+
+## 🎸 Optional: Claude Desktop Integration
+
+If you use Claude Desktop, you can also add Reapermadness as an MCP server:
 
 ```json
 {
@@ -116,100 +142,12 @@ Install as an MCP server for Claude Desktop:
 }
 ```
 
-### Available Tools
+This is optional - the web UI works standalone!
 
-**Knowledge Tools:**
-- `reaper_search` - Natural language search
-- `reaper_get_super8` - Super8 looper documentation
-- `reaper_get_action` - Find actions by ID or name
-- `reaper_get_shortcuts` - Keyboard shortcuts
-- `reaper_get_troubleshooting` - Common issues
-
-**Control Tools:**
-- `reaper_play`, `reaper_stop`, `reaper_record`
-- `reaper_set_tempo`
-- `reaper_trigger_action`
-- `reaper_loop_track`, `reaper_loop_stop_all`, `reaper_loop_clear_all`
-
-## 🎸 Templates & Scripts
-
-### REAPER Templates
-
-- `Solo-Guitar-Looper.RPP` - Single instrument looping setup
-- `Jamband-4Track.RPP` - 4 inputs with separate loopers
-- `Podcast-2Person.RPP` - Two-person podcast template
-
-### Lua Scripts
-
-- `Create_Looping_Setup.lua` - Auto-create looping session
-- `Set_Buffer_For_Live.lua` - Optimize for low latency
-- `Quick_Add_Track_With_Input.lua` - Add monitored track
-- `Export_Stems.lua` - Export all tracks as stems
-- `Toggle_All_Track_Monitoring.lua` - Toggle monitoring
-
-To install scripts: Copy to REAPER's Scripts folder and add to Actions list.
-
-## 🎚️ Windows Audio Setup
-
-For best performance with live looping:
-
-1. **Use ASIO** - Either your audio interface's native ASIO driver or ASIO4ALL
-2. **Set buffer to 128-256 samples** for low latency
-3. **In REAPER**: Preferences → Audio → Device → Select your ASIO driver
-
-## 📝 Commands
-
-```bash
-# Development
-pnpm dev              # Run both server and web
-pnpm dev:server       # Server only
-pnpm dev:web          # Web only
-
-# Build
-pnpm build            # Build all packages
-
-# Production
-pnpm start            # Start HTTP server
-pnpm start:mcp        # Start MCP server (stdio)
-```
-
-## 🔌 Environment Variables
-
-**Server** (`packages/server/.env`):
-```env
-PORT=3001
-OSC_HOST=127.0.0.1
-OSC_PORT=8000
-OSC_LISTEN_PORT=9000
-```
-
-**Web** (`packages/web/.env.local`):
-```env
-VITE_API_URL=http://localhost:3001
-VITE_ANTHROPIC_API_KEY=  # Optional, for AI chat
-```
-
-## 🎯 Use Cases
-
-- **Live Looping Performance**: Control Super8 from web dashboard or foot controller via MIDI
-- **Learning REAPER**: Ask Reapermadness natural language questions about features, shortcuts, workflows
-- **Session Setup**: Use templates and scripts to quickly create projects
-- **AI-Powered Control**: Use MCP server with Claude Desktop for voice/chat control
-
-## 📚 Documentation
-
-- [REAPER OSC Setup](docs/REAPER-OSC-Setup.md)
-
-## 🙏 Credits
-
-- Built for Marc and live loopers everywhere
-- Knowledge compiled from reaper.fm and community resources
-- REAPER is developed by Cockos Incorporated
+---
 
 ## 📄 License
 
-MIT License - Free to use, modify, and share!
-
----
+MIT - Free to use and modify!
 
 **Happy looping! 🎛️🎸**

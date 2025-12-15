@@ -12,8 +12,11 @@
     "build": "pnpm -r build",
     "build:server": "pnpm --filter @reaper-assistant/server build",
     "build:web": "pnpm --filter @reaper-assistant/web build",
+    "build:desktop": "pnpm build:server && pnpm build:web && pnpm --filter reapermadness build",
+    "build:desktop:win": "pnpm build:server && pnpm build:web && pnpm --filter reapermadness build:win",
     "start": "pnpm --filter @reaper-assistant/server start",
     "start:mcp": "node packages/server/dist/index.js --mcp",
+    "desktop": "pnpm --filter reapermadness start",
     "lint": "pnpm -r lint",
     "clean": "pnpm -r clean"
   },
