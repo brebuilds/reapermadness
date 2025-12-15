@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { searchKnowledge } from '../../api/client';
-import { Send, Loader2, Sparkles, AlertCircle, Zap } from 'lucide-react';
+import { Send, Loader2, Sparkles, Zap } from 'lucide-react';
 
 interface Message {
   id: string;

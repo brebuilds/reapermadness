@@ -1,15 +1,15 @@
 # REAPER Knowledge Assistant 🎛️
 
-A comprehensive REAPER DAW assistant for Linux users focused on live looping and performance. Features an MCP server for Claude Desktop, React web app with looper dashboard, and OSC control of REAPER.
+A comprehensive REAPER DAW assistant focused on live looping and performance. Features an MCP server for Claude Desktop, React web app with looper dashboard, and OSC control of REAPER.
 
 ## ✨ Features
 
-- **Knowledge Base**: Comprehensive REAPER documentation with Super8 looper, Linux audio setup, actions, and troubleshooting
+- **AI Chat (Reapermadness)**: Ask natural language questions and get expert answers about REAPER
+- **Knowledge Base**: Comprehensive documentation with Super8 looper, audio setup, actions, and troubleshooting
 - **MCP Server**: 20+ tools for Claude Desktop integration
 - **React Dashboard**: Visual 8-track looper control, transport, tempo
 - **OSC Control**: Direct control of REAPER transport and looper
 - **Performance Mode**: Stage-friendly dark UI with large touch targets
-- **Linux Focus**: JACK, PipeWire, and yabridge setup guides
 
 ## 📁 Project Structure
 
@@ -27,12 +27,11 @@ reaper-assistant/
 │           ├── components/
 │           │   ├── Looper/    # Super8 dashboard
 │           │   ├── Transport/ # Play/stop/record
-│           │   └── Chat/      # Knowledge search
+│           │   └── Chat/      # AI chat with Reapermadness
 │           └── stores/   # Zustand state
 ├── templates/            # REAPER project files
 ├── scripts/              # Lua scripts for REAPER
-├── docs/                 # Setup guides
-└── knowledge-base/       # Standalone knowledge files
+└── docs/                 # Setup guides
 ```
 
 ## 🚀 Quick Start
@@ -47,12 +46,14 @@ reaper-assistant/
 ```bash
 # Clone and install
 git clone <repo-url>
-cd reaper-assistant
+cd reapermadness
 pnpm install
 
 # Start development (both server and web)
 pnpm dev
 ```
+
+Open http://localhost:5173 in your browser.
 
 ### Configure REAPER OSC
 
@@ -60,20 +61,30 @@ pnpm dev
 2. Go to **Control/OSC/Web**
 3. Click **Add** → **OSC**
 4. Configure:
+   - Mode: **Local**
    - Local listen port: `8000`
-   - Device IP: `127.0.0.1`
-   - Device port: `9000`
-5. Click OK and restart REAPER
+5. Click OK
 
 See [docs/REAPER-OSC-Setup.md](docs/REAPER-OSC-Setup.md) for detailed instructions.
 
-### Open the Web App
+## 🎛️ The Web App
 
-Navigate to http://localhost:5173
+### Three Tabs:
 
-- **Dashboard**: Control Super8 looper tracks and transport
-- **Chat**: Search the knowledge base
-- **Settings**: Configure OSC connection
+- **Looper**: Visual 8-track Super8 control with big touch-friendly buttons
+- **Chat**: Talk to Reapermadness - your AI REAPER expert
+- **Settings**: Configure server URL, OSC settings, add your Anthropic API key
+
+### Performance Mode
+Hit the expand button in the header for a minimal stage-friendly UI with giant looper buttons.
+
+### Chat with Reapermadness
+Add your Anthropic API key in Settings to unlock intelligent, conversational answers about:
+- Super8 looper setup and techniques
+- ASIO and audio configuration
+- MIDI mapping for foot controllers
+- REAPER shortcuts and workflows
+- Troubleshooting
 
 ## 🎮 Super8 Looper Control
 
@@ -99,7 +110,7 @@ Install as an MCP server for Claude Desktop:
   "mcpServers": {
     "reaper": {
       "command": "node",
-      "args": ["/path/to/reaper-assistant/packages/server/dist/index.js", "--mcp"]
+      "args": ["/path/to/reapermadness/packages/server/dist/index.js", "--mcp"]
     }
   }
 }
@@ -110,7 +121,6 @@ Install as an MCP server for Claude Desktop:
 **Knowledge Tools:**
 - `reaper_search` - Natural language search
 - `reaper_get_super8` - Super8 looper documentation
-- `reaper_get_linux_setup` - JACK/PipeWire/yabridge guides
 - `reaper_get_action` - Find actions by ID or name
 - `reaper_get_shortcuts` - Keyboard shortcuts
 - `reaper_get_troubleshooting` - Common issues
@@ -139,15 +149,13 @@ Install as an MCP server for Claude Desktop:
 
 To install scripts: Copy to REAPER's Scripts folder and add to Actions list.
 
-## 🐧 Linux Audio Setup
+## 🎚️ Windows Audio Setup
 
-For best performance with live looping on Linux:
+For best performance with live looping:
 
-1. **Use JACK or PipeWire** (not plain PulseAudio)
-2. **Set buffer to 128-256 samples**
-3. **Configure realtime privileges**
-
-See [docs/Linux-Audio-Setup.md](docs/Linux-Audio-Setup.md) for complete guide.
+1. **Use ASIO** - Either your audio interface's native ASIO driver or ASIO4ALL
+2. **Set buffer to 128-256 samples** for low latency
+3. **In REAPER**: Preferences → Audio → Device → Select your ASIO driver
 
 ## 📝 Commands
 
@@ -178,25 +186,23 @@ OSC_LISTEN_PORT=9000
 **Web** (`packages/web/.env.local`):
 ```env
 VITE_API_URL=http://localhost:3001
-VITE_ANTHROPIC_API_KEY=  # Optional, for Claude chat
+VITE_ANTHROPIC_API_KEY=  # Optional, for AI chat
 ```
 
 ## 🎯 Use Cases
 
 - **Live Looping Performance**: Control Super8 from web dashboard or foot controller via MIDI
-- **Learning REAPER**: Ask natural language questions about features, shortcuts, workflows
-- **Linux Audio Help**: Get help with JACK, PipeWire, and yabridge setup
+- **Learning REAPER**: Ask Reapermadness natural language questions about features, shortcuts, workflows
 - **Session Setup**: Use templates and scripts to quickly create projects
 - **AI-Powered Control**: Use MCP server with Claude Desktop for voice/chat control
 
 ## 📚 Documentation
 
 - [REAPER OSC Setup](docs/REAPER-OSC-Setup.md)
-- [Linux Audio Setup](docs/Linux-Audio-Setup.md)
 
 ## 🙏 Credits
 
-- Built for Marc and Linux live loopers everywhere
+- Built for Marc and live loopers everywhere
 - Knowledge compiled from reaper.fm and community resources
 - REAPER is developed by Cockos Incorporated
 
