@@ -161,13 +161,25 @@ function createWindow() {
 
 // Auto-updater configuration
 function setupAutoUpdater() {
+  // Only enable auto-updater in production and if code-signed
+  // Skip if app is not signed (will cause errors)
+  if (isDev) {
+    console.log('Auto-updater disabled in dev mode');
+    return;
+  }
+
   // Configure auto-updater
   autoUpdater.autoDownload = false; // Don't auto-download, ask user first
   autoUpdater.autoInstallOnAppQuit = true; // Install when app quits
 
-  // Check for updates on startup (only in production)
-  if (!isDev) {
-    autoUpdater.checkForUpdatesAndNotify();
+  // Wrap in try-catch to prevent crashes if updater fails
+  try {
+    autoUpdater.checkForUpdatesAndNotify().catch(err => {
+      console.log('Auto-updater check failed (app may not be signed):', err.message);
+      // Don't crash, just log and continue
+    });
+  } catch (error) {
+    console.log('Auto-updater unavailable:', error.message);
   }
 
   // Update available
@@ -216,7 +228,8 @@ function setupAutoUpdater() {
 
   // Error handling
   autoUpdater.on('error', (error) => {
-    console.error('Auto-updater error:', error);
+    console.log('Auto-updater error (non-critical):', error.message);
+    // Don't propagate errors - auto-updater is optional
   });
 }
 
@@ -225,18 +238,34 @@ app.whenReady().then(async () => {
   try {
     console.log('Starting Reapermadness...');
     console.log('Dev mode:', isDev);
+    console.log('App path:', app.getAppPath());
+    console.log('Resources path:', process.resourcesPath);
 
     // Start the server first
+    console.log('Starting server...');
     await startServer();
-    console.log('Server started successfully');
+    console.log('Server started successfully on port', SERVER_PORT);
 
     // Then create the window
+    console.log('Creating window...');
     createWindow();
+    console.log('Window created');
 
     // Setup auto-updater after window is created
+    console.log('Setting up auto-updater...');
     setupAutoUpdater();
+    console.log('Startup complete');
   } catch (error) {
-    console.error('Failed to start:', error);
+    console.error('Failed to start application:', error);
+    console.error('Error stack:', error.stack);
+
+    // Show error dialog before quitting
+    const { dialog } = require('electron');
+    dialog.showErrorBox(
+      'Startup Error',
+      `Failed to start Reapermadness:\n\n${error.message}\n\nCheck the console for details.`
+    );
+
     app.quit();
   }
 });
