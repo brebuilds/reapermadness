@@ -8,7 +8,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "bundle": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/bundle.mjs --external:@modelcontextprotocol/sdk",
-    "build:desktop": "tsc && esbuild dist/index.js --bundle --platform=node --target=node18 --format=cjs --outfile=dist/server-bundle.cjs --packages=bundle",
+    "build:desktop": "tsc && esbuild dist/index.js --bundle --platform=node --target=node18 --format=cjs --outfile=dist/server-bundle.cjs --packages=external",
     "start": "node dist/index.js",
     "start:mcp": "node dist/index.js --mcp",
     "clean": "rm -rf dist"
