@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   knowledgeBase,
   searchKnowledgeBase,
@@ -9,12 +11,44 @@ import {
 } from '../knowledge/search.js';
 import { ReaperOSCClient } from '../osc/reaper-client.js';
 
+// Handle __dirname for both ESM and bundled CJS
+let __dirname: string;
+try {
+  // ESM environment
+  const __filename = fileURLToPath(import.meta.url);
+  __dirname = path.dirname(__filename);
+} catch {
+  // Bundled CJS environment - just use process.cwd() as fallback
+  // In production, WEB_PATH will be set via env var anyway
+  __dirname = process.cwd();
+}
+
 const app = express();
 const oscClient = new ReaperOSCClient();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the web build
+// In production (Electron), web files are in process.resourcesPath/web
+// In development, they're in ../../web/dist relative to this file
+const getWebPath = () => {
+  if (process.env.WEB_PATH) {
+    return process.env.WEB_PATH;
+  }
+  // Try process.resourcesPath first (packaged Electron app)
+  const resourcesPath = (process as any).resourcesPath;
+  if (typeof resourcesPath !== 'undefined') {
+    return path.join(resourcesPath, 'web');
+  }
+  // Fall back to development path
+  return path.join(__dirname, '..', '..', '..', 'web', 'dist');
+};
+
+const webPath = getWebPath();
+console.log('Serving static files from:', webPath);
+app.use(express.static(webPath));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -299,6 +333,12 @@ app.post('/api/looper/stop-all', (req, res) => {
 app.post('/api/looper/clear-all', (req, res) => {
   oscClient.loopClearAll();
   res.json({ success: true, action: 'clear all' });
+});
+
+// Catch-all route to serve index.html for client-side routing
+// This must be after all API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(webPath, 'index.html'));
 });
 
 // Start server

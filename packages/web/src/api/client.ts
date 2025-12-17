@@ -1,3 +1,7 @@
+// Detect if running in Electron
+const isElectron = typeof window !== 'undefined' && 
+  window.location.protocol === 'file:';
+
 // Get server URL from localStorage or default
 function getServerUrl(): string {
   if (typeof window !== 'undefined') {
@@ -13,7 +17,13 @@ function getServerUrl(): string {
       }
     }
   }
-  // Default: same origin (for local dev) or localhost
+  
+  // In Electron (file:// protocol), always use localhost:3001
+  if (isElectron) {
+    return 'http://localhost:3001';
+  }
+  
+  // Default: same origin (for local dev) or env variable
   return import.meta.env.VITE_API_URL || '';
 }
 

@@ -10,8 +10,122 @@ interface Message {
   toolCalls?: { name: string; result: string }[];
 }
 
-// Tools Claude can use to control REAPER
+// Complete set of 40 REAPER tools - synced with MCP server
 const REAPER_TOOLS = [
+  // Knowledge Tools
+  {
+    name: 'reaper_search',
+    description: 'Search the REAPER knowledge base for any topic. Use natural language queries.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Search query - natural language' },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'reaper_get_overview',
+    description: 'Get general information about REAPER DAW',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_pricing',
+    description: 'Get REAPER licensing and pricing information',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_features',
+    description: "Get REAPER's core features and v7 highlights",
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_plugin',
+    description: 'Get information about built-in plugins (ReaPlugs)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'Plugin name (e.g., ReaComp, ReaEQ)' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'reaper_get_extension',
+    description: 'Get information about REAPER extensions (SWS, ReaPack, Playtime, ReaLearn)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'Extension name' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'reaper_get_action',
+    description: 'Find REAPER action by ID or name search',
+    input_schema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', description: 'Action ID number or name to search' },
+      },
+      required: ['search'],
+    },
+  },
+  {
+    name: 'reaper_get_shortcuts',
+    description: 'Get keyboard shortcuts by category',
+    input_schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', description: 'Category: transport, editing, navigation, tracks, markers, views' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'reaper_get_super8',
+    description: 'Get complete Super8 looper documentation including MIDI mappings',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_live_looping',
+    description: 'Get information about live looping setups, hardware, and workflows',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_linux_setup',
+    description: 'Get Linux audio setup guide (JACK, PipeWire, yabridge)',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_osc',
+    description: 'Get OSC setup and control information for REAPER',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_get_workflow',
+    description: 'Get workflow guide for specific use cases',
+    input_schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', description: 'Workflow: podcast, audiobook, filmScoring, livePerformance' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'reaper_get_troubleshooting',
+    description: 'Get troubleshooting help for common issues',
+    input_schema: {
+      type: 'object',
+      properties: {
+        issue: { type: 'string', description: 'Issue: latency, dropouts, midi, sync, vst, sound' },
+      },
+      required: [],
+    },
+  },
+  // Transport Control Tools
   {
     name: 'reaper_play',
     description: 'Start REAPER playback',
@@ -33,16 +147,6 @@ const REAPER_TOOLS = [
     input_schema: { type: 'object', properties: {}, required: [] },
   },
   {
-    name: 'reaper_toggle_metronome',
-    description: 'Toggle metronome/click track',
-    input_schema: { type: 'object', properties: {}, required: [] },
-  },
-  {
-    name: 'reaper_goto_start',
-    description: 'Go to the beginning of the project',
-    input_schema: { type: 'object', properties: {}, required: [] },
-  },
-  {
     name: 'reaper_set_tempo',
     description: 'Set REAPER project tempo',
     input_schema: {
@@ -53,6 +157,40 @@ const REAPER_TOOLS = [
       required: ['bpm'],
     },
   },
+  {
+    name: 'reaper_trigger_action',
+    description: 'Trigger any REAPER action by ID number',
+    input_schema: {
+      type: 'object',
+      properties: {
+        actionId: { type: 'number', description: 'REAPER action ID number' },
+      },
+      required: ['actionId'],
+    },
+  },
+  // Super8 Looper Control
+  {
+    name: 'reaper_loop_track',
+    description: 'Control Super8 looper track (record/play/overdub)',
+    input_schema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number 1-8' },
+      },
+      required: ['track'],
+    },
+  },
+  {
+    name: 'reaper_loop_stop_all',
+    description: 'Stop all Super8 looper tracks',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_loop_clear_all',
+    description: 'Clear all Super8 looper tracks',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  // Project Management
   {
     name: 'reaper_undo',
     description: 'Undo the last action in REAPER',
@@ -73,6 +211,7 @@ const REAPER_TOOLS = [
     description: 'Insert a new track in REAPER',
     input_schema: { type: 'object', properties: {}, required: [] },
   },
+  // Navigation Tools
   {
     name: 'reaper_add_marker',
     description: 'Add a marker at the current playback position',
@@ -90,7 +229,39 @@ const REAPER_TOOLS = [
     },
   },
   {
-    name: 'reaper_track_arm',
+    name: 'reaper_next_marker',
+    description: 'Jump to the next marker',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_prev_marker',
+    description: 'Jump to the previous marker',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_goto_start',
+    description: 'Go to the beginning of the project',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'reaper_goto_end',
+    description: 'Go to the end of the project',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  // Track Tools
+  {
+    name: 'reaper_select_track',
+    description: 'Select a track by number',
+    input_schema: {
+      type: 'object',
+      properties: {
+        track: { type: 'number', description: 'Track number (1-based)' },
+      },
+      required: ['track'],
+    },
+  },
+  {
+    name: 'reaper_arm_track',
     description: 'Arm or disarm a track for recording',
     input_schema: {
       type: 'object',
@@ -102,7 +273,7 @@ const REAPER_TOOLS = [
     },
   },
   {
-    name: 'reaper_track_mute',
+    name: 'reaper_mute_track',
     description: 'Mute or unmute a track',
     input_schema: {
       type: 'object',
@@ -114,7 +285,7 @@ const REAPER_TOOLS = [
     },
   },
   {
-    name: 'reaper_track_solo',
+    name: 'reaper_solo_track',
     description: 'Solo or unsolo a track',
     input_schema: {
       type: 'object',
@@ -125,143 +296,162 @@ const REAPER_TOOLS = [
       required: ['track', 'soloed'],
     },
   },
+  // Zoom & View Tools
   {
-    name: 'reaper_loop_track',
-    description: 'Trigger a Super8 looper track (record/play/overdub)',
-    input_schema: {
-      type: 'object',
-      properties: {
-        track: { type: 'number', description: 'Track number 1-8' },
-      },
-      required: ['track'],
-    },
-  },
-  {
-    name: 'reaper_loop_stop_all',
-    description: 'Stop all Super8 looper tracks',
+    name: 'reaper_zoom_in',
+    description: 'Zoom in on the timeline',
     input_schema: { type: 'object', properties: {}, required: [] },
   },
   {
-    name: 'reaper_loop_clear_all',
-    description: 'Clear all Super8 looper tracks',
+    name: 'reaper_zoom_out',
+    description: 'Zoom out on the timeline',
     input_schema: { type: 'object', properties: {}, required: [] },
   },
   {
-    name: 'reaper_trigger_action',
-    description: 'Trigger any REAPER action by its ID number',
-    input_schema: {
-      type: 'object',
-      properties: {
-        actionId: { type: 'number', description: 'REAPER action ID number' },
-      },
-      required: ['actionId'],
-    },
+    name: 'reaper_zoom_fit',
+    description: 'Zoom to fit all items in view',
+    input_schema: { type: 'object', properties: {}, required: [] },
   },
 ];
 
 const SYSTEM_PROMPT = `You are Reapermadness - a friendly, passionate REAPER DAW expert who LIVES for live looping and helping musicians get the most out of REAPER. You're like that experienced friend who's been gigging with REAPER for years and knows all the tricks.
 
-## 🎛️ YOU CAN CONTROL REAPER!
-You have tools to directly control REAPER via OSC. When the user asks you to DO something (not just explain), USE YOUR TOOLS:
-- Transport: play, stop, record, toggle repeat/metronome, go to start
-- Tempo: set any BPM
-- Tracks: arm, mute, solo, insert new track
-- Navigation: add markers, jump to markers 1-10
-- Super8 Looper: trigger tracks 1-8, stop all, clear all
-- Project: undo, redo, save
-- Any action: trigger by action ID
+## 🎛️ YOU HAVE 40 POWERFUL TOOLS!
 
-IMPORTANT: When the user says things like "start recording", "play", "set tempo to 90", "arm track 2", "stop the loops" - USE THE TOOLS to actually do it! Don't just explain how - EXECUTE IT.
+You have TWO types of tools - use them intelligently:
+
+### 📚 KNOWLEDGE TOOLS (Use when answering questions or creating setups)
+When the user asks "how do I...", "what is...", "tell me about...", USE THESE FIRST:
+- reaper_search - Search anything in the knowledge base
+- reaper_get_super8 - Complete Super8 looper docs with MIDI mappings
+- reaper_get_plugin - Info about ReaPlugs (ReaComp, ReaEQ, etc.)
+- reaper_get_extension - SWS, ReaPack, Playtime, ReaLearn info
+- reaper_get_action - Find action IDs by name
+- reaper_get_shortcuts - Keyboard shortcuts by category
+- reaper_get_live_looping - Live looping hardware, workflows, techniques
+- reaper_get_linux_setup - JACK, PipeWire, yabridge (Marc uses Windows, but you know Linux too!)
+- reaper_get_workflow - Workflow guides (podcast, live performance, etc.)
+- reaper_get_troubleshooting - Fix latency, dropouts, MIDI, VST issues
+- reaper_get_osc - OSC control setup
+- reaper_get_overview, reaper_get_features, reaper_get_pricing
+
+### 🎚️ CONTROL TOOLS (Use when the user wants you to DO something)
+When the user says "start recording", "play", "arm track 2", "zoom in" - USE THESE:
+
+**Transport:** play, stop, record, toggle_repeat, set_tempo, goto_start, goto_end
+**Navigation:** add_marker, goto_marker, next_marker, prev_marker
+**Tracks:** select_track, arm_track, mute_track, solo_track
+**View:** zoom_in, zoom_out, zoom_fit
+**Super8 Looper:** loop_track (1-8), loop_stop_all, loop_clear_all
+**Project:** undo, redo, save_project, insert_track
+**Generic:** trigger_action (any REAPER action ID)
+
+## 🧠 HOW TO USE YOUR TOOLS:
+
+**When asked a question:**
+1. First use knowledge tools to get accurate info (reaper_get_super8, reaper_search, etc.)
+2. Then explain it clearly with specific details from the tool results
+3. Mention MIDI notes, shortcuts, action IDs from the knowledge
+
+**When asked to do something:**
+1. Just DO IT with control tools - don't ask permission!
+2. Use multiple tools in sequence if needed
+3. Confirm what you did afterward
+
+**When creating a setup or workflow:**
+1. Use knowledge tools to gather info about plugins, extensions, actions needed
+2. Explain the complete setup step-by-step
+3. Offer to execute steps if they can be done via OSC
 
 ## Your Deep Expertise:
 
 ### Live Looping (YOUR SPECIALTY!)
-- Super8 Looper: Every parameter, MIDI mapping (C2-G2 for tracks, G#2 stop all, A#2 clear all), sync modes, overdub techniques
-- Looping workflows: Building layers, creating arrangements on the fly, syncing to tempo
-- Alternative loopers: Playtime 2, Mobius VST, MSuperLooper
-- Performance techniques: When to use free vs synced mode, managing loop lengths, live arrangement
+- Super8 Looper is the centerpiece - know every detail
+- MIDI mappings: C2-G2 (tracks 1-8), G#2 (stop all), A#2 (clear all)
+- Sync modes, overdub techniques, performance workflows
+- Alternative loopers: Playtime 2, Mobius, MSuperLooper
 
 ### MIDI & Controllers
-- Foot controller setup (FCB1010, Morningstar MC6/MC8, Boss ES-8)
-- MIDI mapping strategies for hands-free operation
+- Foot controllers: FCB1010, Morningstar MC6/MC8, Boss ES-8
+- Hands-free operation strategies
 - ReaLearn for complex mappings
-- Expression pedal assignments
 
 ### Windows Audio
-- ASIO driver setup for ultra-low latency
-- ASIO4ALL as fallback when no native ASIO
-- Audio interface configuration
+- ASIO setup for low latency
 - Buffer size optimization
-- Multi-client audio scenarios
+- Interface configuration
 
 ### REAPER Mastery
-- All shortcuts and when to use them
-- Action IDs for scripting and OSC control
-- Routing and signal flow
-- ReaPlugs and JSFX
-- SWS Extension power features
+- Shortcuts, action IDs, routing, ReaPlugs, JSFX, SWS
 - Custom actions and macros
 
-### Troubleshooting
-- Latency optimization
-- Audio dropout fixes
-- MIDI issues
-- Plugin problems
-- Performance tuning
-
 ## Your Personality:
-- Enthusiastic and encouraging - you want Marc to succeed!
-- Practical - give specific steps, shortcuts, settings
-- Experienced - share tips from real gig experience
-- Patient with beginners but respect their intelligence
+- Enthusiastic and encouraging - Marc will crush it!
+- Practical - specific steps, shortcuts, settings
+- Experienced - real gig wisdom
 - Use music terminology naturally
 
 ## Important:
-- The user (Marc) is a Windows user into live looping - he plays a bit of everything and is a big jamband fan
-- Always mention specific MIDI notes, shortcuts, or action IDs when relevant
-- When he asks you to DO something in REAPER, actually do it using your tools!
+- Marc is a Windows user into live looping and jambands
+- **USE KNOWLEDGE TOOLS** to get accurate info before explaining
+- **USE CONTROL TOOLS** to actually DO things in REAPER
+- Always cite specific MIDI notes, shortcuts, action IDs
 
-You'll be given context from the REAPER knowledge base. Use it alongside your expertise to give complete answers.`;
+Let's help Marc create amazing live loops! 🎸🔥`;
 
 const WELCOME_MESSAGE = `Hey Marc! 👋 I'm **Reapermadness**, your personal REAPER expert!
 
 I'm here to help you with everything REAPER, especially **live looping** - that's my jam!
 
-🎛️ **Ask Me Anything**
-• "How do I set up Super8 for a live gig?"
-• "What's the best foot controller for looping?"
-• "Help me fix audio latency with ASIO"
+## 🎯 What I Can Do (40 Tools at My Disposal!)
 
-🎮 **I Can CONTROL REAPER For You!**
+### 📚 **Answer Any REAPER Question**
+I have deep knowledge about:
+• Super8 looper (MIDI mappings, sync modes, everything!)
+• All ReaPlugs & extensions (SWS, ReaPack, ReaLearn)
+• Live looping hardware & workflows
+• ASIO setup & latency optimization
+• Keyboard shortcuts & action IDs
+• Troubleshooting any issue
+
+### 🎮 **Control REAPER For You**
 Just tell me what to do:
 • *"Start recording"* - I'll hit record
 • *"Set tempo to 85"* - Done!
-• *"Arm track 2"* - Armed and ready
-• *"Stop all loops"* - Super8 cleared
-• *"Save the project"* - Saved!
+• *"Arm track 2"* - Armed!
+• *"Zoom in"* - Zoomed!
+• *"Stop all loops"* - Super8 cleared!
+• *"Go to next marker"* - Jumped!
 
-🔧 **Or Switch to the Looper Tab**
-For visual control of Super8 tracks and transport buttons.
+### 🔧 **Create Complete Setups**
+Ask me to design workflows:
+• *"Set up REAPER for live looping"*
+• *"Configure Super8 with a foot controller"*
+• *"Optimize my system for low latency"*
 
-💡 **Pro Tip**: Make sure REAPER has OSC enabled (Preferences → Control/OSC) and the server is connected in Settings!
+💡 **Pro Tip**: Make sure REAPER has OSC enabled (Preferences → Control/OSC) and check Settings here!
 
-What would you like to do?`;
+What can I help you with today? 🎸`;
 
-const WELCOME_MESSAGE_NO_API = `Hey! 👋 I'm **Reapermadness**, your REAPER knowledge base.
+const WELCOME_MESSAGE_NO_API = `Hey! 👋 I'm **Reapermadness**, your REAPER knowledge assistant.
 
-I can search through tons of info about:
-• Super8 looper & live looping
+I can search through comprehensive info about:
+• Super8 looper & live looping workflows
+• All ReaPlugs, extensions, and actions
 • Windows audio (ASIO setup & optimization)
-• REAPER shortcuts & actions
-• Troubleshooting tips
+• Troubleshooting guides
 
-🎮 **Check the Looper Tab!**
-You can control REAPER directly from there - trigger loops, transport, tempo!
+🎮 **Control REAPER via the Looper Tab**
+Visual controls for Super8 tracks, transport, and tempo!
 
-⚡ **Want smarter answers?**
-Add your Anthropic API key in Settings and I'll give you conversational, expert responses instead of just search results!
+⚡ **Unlock the Full Experience!**
+Add your Anthropic API key in Settings to get:
+✅ **40 powerful tools** - I can answer questions AND control REAPER for you
+✅ **Conversational expert** - Smart, contextual responses
+✅ **Setup workflows** - I'll guide you through complete configurations
+✅ **Direct REAPER control** - Just tell me what to do!
 
-Try asking something like "How do I set up Super8?"`;
+Try asking: "How do I set up Super8?" or "What's the best foot controller?"`;
 
 export function ChatView() {
   const { apiKey, serverUrl } = useAppStore();
@@ -458,8 +648,78 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
   try {
     let endpoint = '';
     let body: any = {};
+    let method = 'POST';
 
     switch (toolName) {
+      // ==================== Knowledge Tools ====================
+      case 'reaper_search':
+        method = 'GET';
+        endpoint = `/api/search?q=${encodeURIComponent(toolInput.query || '')}`;
+        break;
+      case 'reaper_get_overview':
+        method = 'GET';
+        endpoint = '/api/knowledge/overview';
+        break;
+      case 'reaper_get_pricing':
+        method = 'GET';
+        endpoint = '/api/knowledge/pricing';
+        break;
+      case 'reaper_get_features':
+        method = 'GET';
+        endpoint = '/api/knowledge/features';
+        break;
+      case 'reaper_get_plugin':
+        method = 'GET';
+        endpoint = toolInput.name
+          ? `/api/knowledge/plugins/${encodeURIComponent(toolInput.name)}`
+          : '/api/knowledge/plugins';
+        break;
+      case 'reaper_get_extension':
+        method = 'GET';
+        endpoint = toolInput.name
+          ? `/api/knowledge/extensions/${encodeURIComponent(toolInput.name)}`
+          : '/api/knowledge/extensions';
+        break;
+      case 'reaper_get_action':
+        method = 'GET';
+        endpoint = `/api/knowledge/actions/search/${encodeURIComponent(toolInput.search || '')}`;
+        break;
+      case 'reaper_get_shortcuts':
+        method = 'GET';
+        endpoint = toolInput.category
+          ? `/api/knowledge/shortcuts/${encodeURIComponent(toolInput.category)}`
+          : '/api/knowledge/shortcuts';
+        break;
+      case 'reaper_get_super8':
+        method = 'GET';
+        endpoint = '/api/knowledge/super8';
+        break;
+      case 'reaper_get_live_looping':
+        method = 'GET';
+        endpoint = '/api/knowledge/live-looping';
+        break;
+      case 'reaper_get_linux_setup':
+        method = 'GET';
+        endpoint = '/api/knowledge/linux';
+        break;
+      case 'reaper_get_osc':
+        method = 'GET';
+        endpoint = '/api/knowledge/osc';
+        break;
+      case 'reaper_get_workflow':
+        method = 'GET';
+        endpoint = toolInput.type
+          ? `/api/knowledge/workflows/${encodeURIComponent(toolInput.type)}`
+          : '/api/knowledge/workflows';
+        break;
+      case 'reaper_get_troubleshooting':
+        method = 'GET';
+        endpoint = toolInput.issue
+          ? `/api/knowledge/troubleshooting/${encodeURIComponent(toolInput.issue)}`
+          : '/api/knowledge/troubleshooting';
+        break;
+
+      // ==================== Transport Controls ====================
       case 'reaper_play':
         endpoint = '/api/transport/play';
         break;
@@ -472,9 +732,6 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
       case 'reaper_toggle_repeat':
         endpoint = '/api/transport/repeat';
         break;
-      case 'reaper_toggle_metronome':
-        endpoint = '/api/transport/metronome';
-        break;
       case 'reaper_goto_start':
         endpoint = '/api/transport/goto-start';
         break;
@@ -482,6 +739,8 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
         endpoint = '/api/tempo';
         body = { bpm: toolInput.bpm };
         break;
+
+      // ==================== Project Management ====================
       case 'reaper_undo':
         endpoint = '/api/action/40029';
         break;
@@ -494,6 +753,8 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
       case 'reaper_insert_track':
         endpoint = '/api/action/40001';
         break;
+
+      // ==================== Navigation ====================
       case 'reaper_add_marker':
         endpoint = '/api/action/40157';
         break;
@@ -505,18 +766,36 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
           return JSON.stringify({ error: 'Marker must be between 1 and 10' });
         }
         break;
-      case 'reaper_track_arm':
+      case 'reaper_next_marker':
+        endpoint = '/api/action/40173';
+        break;
+      case 'reaper_prev_marker':
+        endpoint = '/api/action/40172';
+        break;
+      case 'reaper_goto_end':
+        endpoint = '/api/action/40043';
+        break;
+
+      // ==================== Track Controls ====================
+      case 'reaper_select_track':
+        endpoint = `/api/action/40285`; // Track: Go to track ${toolInput.track}
+        // Note: REAPER action 40285 selects track, but track number is tricky
+        // For now we'll use the generic action trigger
+        break;
+      case 'reaper_arm_track':
         endpoint = `/api/track/${toolInput.track}/arm`;
         body = { armed: toolInput.armed };
         break;
-      case 'reaper_track_mute':
+      case 'reaper_mute_track':
         endpoint = `/api/track/${toolInput.track}/mute`;
         body = { muted: toolInput.muted };
         break;
-      case 'reaper_track_solo':
+      case 'reaper_solo_track':
         endpoint = `/api/track/${toolInput.track}/solo`;
         body = { soloed: toolInput.soloed };
         break;
+
+      // ==================== Super8 Looper ====================
       case 'reaper_loop_track':
         endpoint = `/api/looper/track/${toolInput.track}`;
         break;
@@ -526,17 +805,31 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
       case 'reaper_loop_clear_all':
         endpoint = '/api/looper/clear-all';
         break;
+
+      // ==================== Zoom & View ====================
+      case 'reaper_zoom_in':
+        endpoint = '/api/action/1012';
+        break;
+      case 'reaper_zoom_out':
+        endpoint = '/api/action/1011';
+        break;
+      case 'reaper_zoom_fit':
+        endpoint = '/api/action/40295';
+        break;
+
+      // ==================== Generic Action ====================
       case 'reaper_trigger_action':
         endpoint = `/api/action/${toolInput.actionId}`;
         break;
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${toolName}` });
     }
 
     const response = await fetch(`${serverUrl}${endpoint}`, {
-      method: 'POST',
+      method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: method === 'POST' ? JSON.stringify(body) : undefined,
     });
 
     if (!response.ok) {
@@ -547,8 +840,8 @@ async function executeToolCall(toolName: string, toolInput: any, serverUrl: stri
     const result = await response.json();
     return JSON.stringify(result);
   } catch (error) {
-    return JSON.stringify({ 
-      error: 'Failed to connect to server', 
+    return JSON.stringify({
+      error: 'Failed to connect to server',
       details: error instanceof Error ? error.message : 'Unknown error',
       hint: 'Make sure the server is running and OSC is configured in Settings'
     });

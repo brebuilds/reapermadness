@@ -59,8 +59,13 @@ async function startServer() {
       ? path.join(__dirname, '..', 'server', 'src', 'knowledge')
       : path.join(process.resourcesPath, 'server', 'knowledge');
 
+    const webPath = isDev
+      ? path.join(__dirname, '..', 'web', 'dist')
+      : path.join(process.resourcesPath, 'web');
+
     console.log('Starting server from:', serverPath);
     console.log('Knowledge path:', knowledgePath);
+    console.log('Web path:', webPath);
 
     // Spawn server process
     serverProcess = spawn('node', [serverPath], {
@@ -68,6 +73,7 @@ async function startServer() {
         ...process.env,
         PORT: SERVER_PORT.toString(),
         KNOWLEDGE_PATH: knowledgePath,
+        WEB_PATH: webPath,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -124,19 +130,10 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    // In production, load the built files
-    const webPath = path.join(process.resourcesPath, 'web', 'index.html');
-    console.log('Loading web from:', webPath);
-    
-    // Check if file exists
-    const fs = require('fs');
-    if (!fs.existsSync(webPath)) {
-      console.error('ERROR: Web files not found at:', webPath);
-      console.error('Resources path:', process.resourcesPath);
-      console.error('Contents:', fs.readdirSync(process.resourcesPath));
-    }
-    
-    mainWindow.loadFile(webPath).catch(err => {
+    // In production, load from the HTTP server (not file://)
+    // This fixes CORS issues when loading assets
+    console.log('Loading web from HTTP server: http://localhost:3001');
+    mainWindow.loadURL('http://localhost:3001').catch(err => {
       console.error('Failed to load web content:', err);
     });
   }
