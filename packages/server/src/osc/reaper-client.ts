@@ -6,6 +6,23 @@ export interface ReaperOSCConfig {
   listenPort: number;
 }
 
+export interface LoopTrack {
+  id: number;
+  state: 'empty' | 'recording' | 'playing' | 'stopped';
+  hasContent: boolean;
+}
+
+export interface ReaperState {
+  tempo: number;
+  isPlaying: boolean;
+  isRecording: boolean;
+  repeatEnabled: boolean;
+  looperTracks: LoopTrack[];
+  timestamp: number;
+}
+
+type StateChangeListener = (state: ReaperState) => void;
+
 const DEFAULT_CONFIG: ReaperOSCConfig = {
   host: process.env.OSC_HOST || '127.0.0.1',
   port: parseInt(process.env.OSC_PORT || '8000'),
@@ -30,9 +47,25 @@ export class ReaperOSCClient {
   private udpPort: osc.UDPPort | null = null;
   private config: ReaperOSCConfig;
   private connected: boolean = false;
+  private state: ReaperState;
+  private listeners: StateChangeListener[] = [];
 
   constructor(config: Partial<ReaperOSCConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+
+    // Initialize default state
+    this.state = {
+      tempo: 120,
+      isPlaying: false,
+      isRecording: false,
+      repeatEnabled: false,
+      looperTracks: Array.from({ length: 8 }, (_, i) => ({
+        id: i + 1,
+        state: 'empty',
+        hasContent: false,
+      })),
+      timestamp: Date.now(),
+    };
   }
 
   /**
@@ -61,6 +94,7 @@ export class ReaperOSCClient {
 
         this.udpPort.on('message', (oscMsg: any) => {
           console.log('OSC received:', oscMsg);
+          this.parseOSCMessage(oscMsg);
         });
 
         this.udpPort.open();
@@ -186,6 +220,94 @@ export class ReaperOSCClient {
 
   loopClearAll(): void {
     this.sendMidiNote(SUPER8_NOTES.clearAll);
+  }
+
+  // Parse incoming OSC messages to update state
+  private parseOSCMessage(msg: any): void {
+    if (!msg || !msg.address) return;
+
+    const address = msg.address;
+    const args = msg.args || [];
+    const value = args[0]?.value;
+
+    let stateChanged = false;
+
+    try {
+      // Transport state
+      if (address === '/play') {
+        if (this.state.isPlaying !== (value === 1)) {
+          this.state.isPlaying = value === 1;
+          stateChanged = true;
+        }
+      } else if (address === '/record') {
+        if (this.state.isRecording !== (value === 1)) {
+          this.state.isRecording = value === 1;
+          stateChanged = true;
+        }
+      } else if (address === '/repeat') {
+        if (this.state.repeatEnabled !== (value === 1)) {
+          this.state.repeatEnabled = value === 1;
+          stateChanged = true;
+        }
+      }
+      // Tempo
+      else if (address === '/tempo/raw' || address === '/tempo') {
+        const newTempo = Math.round(parseFloat(value) * 10) / 10;
+        if (this.state.tempo !== newTempo) {
+          this.state.tempo = newTempo;
+          stateChanged = true;
+        }
+      }
+      // Track states (for looper tracking)
+      else if (address.startsWith('/track/') && address.includes('/recarm')) {
+        const trackMatch = address.match(/\/track\/(\d+)\//);
+        if (trackMatch) {
+          const trackNum = parseInt(trackMatch[1]);
+          if (trackNum >= 1 && trackNum <= 8) {
+            const track = this.state.looperTracks[trackNum - 1];
+            const armed = value === 1;
+            if (armed && track.state === 'empty') {
+              track.state = 'recording';
+              track.hasContent = true;
+              stateChanged = true;
+            }
+          }
+        }
+      }
+
+      if (stateChanged) {
+        this.state.timestamp = Date.now();
+        this.notifyListeners();
+      }
+    } catch (error) {
+      console.error('Error parsing OSC message:', error);
+    }
+  }
+
+  // Notify all listeners of state change
+  private notifyListeners(): void {
+    const stateCopy = JSON.parse(JSON.stringify(this.state));
+    this.listeners.forEach(listener => {
+      try {
+        listener(stateCopy);
+      } catch (error) {
+        console.error('Error in state change listener:', error);
+      }
+    });
+  }
+
+  // Get current REAPER state
+  getState(): ReaperState {
+    return JSON.parse(JSON.stringify(this.state));
+  }
+
+  // Subscribe to state changes
+  onStateChange(listener: StateChangeListener): () => void {
+    this.listeners.push(listener);
+    // Return unsubscribe function
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
   }
 
   // Disconnect

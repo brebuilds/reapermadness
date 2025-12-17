@@ -165,3 +165,111 @@ export async function healthCheck(serverUrl?: string) {
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   return response.json() as Promise<{ status: string; osc: { host: string; port: number } }>;
 }
+
+// ==================== Chat API (Streaming) ====================
+
+export interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface StreamChatOptions {
+  message: string;
+  conversationHistory: Message[];
+  apiKey: string;
+  reaperState?: any;
+  userProfile?: any;
+  onChunk: (chunk: string) => void;
+  onFollowUps?: (followUps: string[]) => void;
+  onError: (error: string) => void;
+  onComplete: () => void;
+}
+
+export async function streamChat(options: StreamChatOptions): Promise<void> {
+  const {
+    message,
+    conversationHistory,
+    apiKey,
+    reaperState,
+    userProfile,
+    onChunk,
+    onFollowUps,
+    onError,
+    onComplete,
+  } = options;
+
+  try {
+    const serverUrl = getServerUrl();
+    const response = await fetch(`${serverUrl}/api/chat/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        conversationHistory,
+        apiKey,
+        reaperState,
+        userProfile,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
+    if (!response.body) {
+      throw new Error('No response body');
+    }
+
+    // Process SSE stream
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      // Decode and add to buffer
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete lines
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+
+          try {
+            const parsed = JSON.parse(data);
+
+            if (parsed.type === 'chunk' && parsed.content) {
+              onChunk(parsed.content);
+            } else if (parsed.type === 'followups' && parsed.followups) {
+              if (onFollowUps) {
+                onFollowUps(parsed.followups);
+              }
+            } else if (parsed.type === 'error') {
+              onError(parsed.error || 'Unknown error');
+              return;
+            } else if (parsed.type === 'complete') {
+              onComplete();
+              return;
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE data:', data);
+          }
+        }
+      }
+    }
+
+    // Stream ended without explicit completion
+    onComplete();
+
+  } catch (error: any) {
+    onError(error.message || 'Failed to connect to streaming API');
+  }
+}

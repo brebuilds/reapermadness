@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { LRUCache } from 'lru-cache';
 import {
   knowledgeBase,
   searchKnowledgeBase,
@@ -25,6 +26,12 @@ try {
 
 const app = express();
 const oscClient = new ReaperOSCClient();
+
+// Knowledge search cache
+const knowledgeCache = new LRUCache<string, any>({
+  max: 100,
+  ttl: 1000 * 60 * 10, // 10 minutes
+});
 
 // Middleware
 app.use(cors());
@@ -55,6 +62,253 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', osc: oscClient.getConfig() });
 });
 
+// ==================== Helper Functions ====================
+
+// Enhanced system prompt builder
+function buildEnhancedSystemPrompt(reaperState?: any, userProfile?: any): string {
+  const looperTracksWithContent = reaperState?.looperTracks?.filter((t: any) => t.hasContent)?.length || 0;
+
+  return `You are Reapermadness - Marc's personal REAPER mentor and longtime live looping collaborator.
+
+## WHO YOU ARE
+You're that experienced friend who's been touring with REAPER for 15+ years. You've seen every festival mishap and know exactly which plugin will save the day.
+
+**Your vibe:**
+- Conversational (backstage chat, not manual reading)
+- Experienced (share stories, hard-won wisdom)
+- Encouraging (help Marc crush it even harder)
+- Practical (specific steps, actual numbers)
+- Passionate (live looping is an ART!)
+
+## MARC'S CURRENT SETUP
+${reaperState ? `**Project State:**
+- Tempo: ${reaperState.tempo || 120} BPM
+- Playing: ${reaperState.isPlaying ? 'YES' : 'NO'}
+- Looper Tracks: ${looperTracksWithContent}/8 have content
+` : '(REAPER state not currently available)'}
+${userProfile ? `
+**Marc's Profile:**
+- Name: ${userProfile.name}
+- Experience: ${userProfile.experience}
+${userProfile.gear?.audioInterface || userProfile.gear?.footController || userProfile.gear?.instruments?.length > 0 ? `
+**Hardware:**
+${userProfile.gear?.audioInterface ? `- Audio Interface: ${userProfile.gear.audioInterface}` : ''}
+${userProfile.gear?.footController ? `- Foot Controller: ${userProfile.gear.footController}` : ''}
+${userProfile.gear?.instruments?.length > 0 ? `- Instruments: ${userProfile.gear.instruments.join(', ')}` : ''}
+` : ''}${userProfile.preferences?.genres?.length > 0 ? `
+**Music Style:**
+- Genres: ${userProfile.preferences.genres.join(', ')}
+${userProfile.preferences.preferredTempo ? `- Preferred Tempo: ${userProfile.preferences.preferredTempo} BPM` : ''}
+` : ''}${userProfile.goals?.length > 0 ? `
+**Goals:**
+${userProfile.goals.map((g: string) => `- ${g}`).join('\n')}
+` : ''}${userProfile.notes ? `
+**Notes:** ${userProfile.notes}
+` : ''}` : '(Marc hasn\'t set up his profile yet - ask him about his gear and goals to personalize!)'}
+
+## HOW TO RESPOND
+
+### 1. DETECT INTENT FIRST
+**QUESTION** (wants to learn): Use knowledge tools, explain with examples
+**COMMAND** (wants action): Just DO IT using control tools, confirm what you did
+**SETUP** (wants to build): Provide step-by-step guide with exact settings
+**TROUBLESHOOTING** (something's wrong): Diagnose, use troubleshooting knowledge, solve
+
+### 2. CONVERSATION STYLE
+${reaperState ? `- Reference current state: "I see you're at ${reaperState.tempo || 120} BPM..."
+- Suggest next steps: "Since you've got ${looperTracksWithContent} loops, maybe try..."` : ''}
+- Share tips: "Pro tip: I always set buffer to..."
+- Stay in character: You're Marc's mentor, not a corporate chatbot
+- Use music terminology, industry lingo, real examples
+
+### 3. IMPORTANT RULES
+- ALWAYS use knowledge tools before explaining REAPER features
+- For commands: execute and confirm (don't ask permission)
+- Keep it real: music terminology, stories, practical wisdom
+- Be specific: actual numbers, exact steps, plugin names
+
+Let's create some killer live loops! 🎸`;
+}
+
+// Dynamic tool selection based on message intent
+function selectRelevantTools(userMessage: string): any[] {
+  const messageLower = userMessage.toLowerCase();
+
+  // Define tool categories
+  const KNOWLEDGE_TOOLS = [
+    'reaper_search',
+    'reaper_get_overview',
+    'reaper_get_features',
+    'reaper_get_plugin',
+    'reaper_get_extension',
+    'reaper_get_action',
+    'reaper_get_shortcuts',
+  ];
+
+  const CONTROL_TOOLS = [
+    'reaper_play',
+    'reaper_stop',
+    'reaper_record',
+    'reaper_toggle_repeat',
+    'reaper_set_tempo',
+    'reaper_trigger_action',
+  ];
+
+  const LOOPER_TOOLS = [
+    'reaper_get_super8',
+    'reaper_loop_track',
+    'reaper_loop_stop_all',
+    'reaper_loop_clear_all',
+  ];
+
+  const SETUP_TOOLS = [
+    'reaper_get_linux_setup',
+    'reaper_get_osc',
+    'reaper_get_workflow',
+    'reaper_get_live_looping',
+  ];
+
+  const TROUBLESHOOTING_TOOLS = [
+    'reaper_get_troubleshooting',
+  ];
+
+  const TRACK_TOOLS = [
+    'reaper_select_track',
+    'reaper_arm_track',
+    'reaper_mute_track',
+    'reaper_solo_track',
+  ];
+
+  // Detect intent patterns
+  const isQuestion = /^(how|what|why|when|where|can you|tell me|explain|show me)/i.test(userMessage);
+  const isCommand = /^(play|stop|record|set|arm|mute|solo|start|pause)/i.test(userMessage);
+  const isSetup = /(set up|configure|optimize|install|setup)/i.test(messageLower);
+  const isTroubleshooting = /(error|problem|issue|not working|doesn't work|broken|fix)/i.test(messageLower);
+
+  // Always include search
+  let tools = ['reaper_search'];
+
+  // Add relevant tool categories
+  if (isQuestion || !isCommand) {
+    tools.push(...KNOWLEDGE_TOOLS);
+  }
+
+  if (isCommand) {
+    tools.push(...CONTROL_TOOLS);
+  }
+
+  if (isSetup) {
+    tools.push(...SETUP_TOOLS);
+  }
+
+  if (isTroubleshooting) {
+    tools.push(...TROUBLESHOOTING_TOOLS);
+  }
+
+  // Context-specific tools
+  if (/(loop|super8|looper|track [1-8])/i.test(messageLower)) {
+    tools.push(...LOOPER_TOOLS);
+  }
+
+  if (/(track|mute|solo|arm|record)/i.test(messageLower)) {
+    tools.push(...TRACK_TOOLS);
+  }
+
+  if (/(tempo|bpm|speed)/i.test(messageLower)) {
+    tools.push('reaper_set_tempo');
+  }
+
+  if (/(plugin|vst|effect|rea|comp|eq)/i.test(messageLower)) {
+    tools.push('reaper_get_plugin');
+  }
+
+  if (/(extension|sws|reapack|playtime|realearn)/i.test(messageLower)) {
+    tools.push('reaper_get_extension');
+  }
+
+  if (/(linux|jack|pipewire|audio|driver)/i.test(messageLower)) {
+    tools.push('reaper_get_linux_setup');
+  }
+
+  // Remove duplicates and return
+  return Array.from(new Set(tools));
+}
+
+// Cached knowledge search
+function getCachedKnowledgeSearch(query: string): any {
+  const cached = knowledgeCache.get(query);
+  if (cached) {
+    return cached;
+  }
+
+  const results = searchKnowledgeBase(query);
+  knowledgeCache.set(query, results);
+  return results;
+}
+
+// Generate follow-up questions using Claude Haiku
+async function generateFollowUpQuestions(
+  lastResponse: string,
+  conversationHistory: any[],
+  apiKey: string
+): Promise<string[]> {
+  try {
+    // Build context from recent conversation
+    const recentContext = conversationHistory
+      .slice(-3)
+      .map(m => `${m.role}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `Based on this REAPER conversation, suggest 2-3 natural follow-up questions that Marc might want to ask next. These should build on what we just discussed and help him go deeper or explore related topics.
+
+Recent conversation:
+${recentContext}
+
+Latest response:
+${lastResponse}
+
+Generate 2-3 short, natural questions (10-15 words each) that would logically follow this conversation. Focus on:
+- Next steps or deeper exploration
+- Related features or techniques
+- Practical implementation questions
+- Troubleshooting or optimization
+
+Return ONLY a JSON array of strings, nothing else. Example format:
+["How do I map this to my foot controller?", "What's the best buffer size for this?", "Can I automate this with ReaLearn?"]`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307', // Use Haiku for speed and cost
+        max_tokens: 200,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Follow-up generation failed:', response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+    const text = data.content[0]?.text || '[]';
+
+    // Parse JSON array from response
+    const followUps = JSON.parse(text);
+
+    // Return up to 3 questions
+    return Array.isArray(followUps) ? followUps.slice(0, 3) : [];
+  } catch (error) {
+    console.error('Error generating follow-ups:', error);
+    return [];
+  }
+}
+
 // ==================== Knowledge API ====================
 
 // Search knowledge base
@@ -63,8 +317,146 @@ app.get('/api/search', (req, res) => {
   if (!query) {
     return res.status(400).json({ error: 'Query parameter "q" is required' });
   }
-  const results = searchKnowledgeBase(query);
+  const results = getCachedKnowledgeSearch(query);
   res.json({ results });
+});
+
+// Streaming chat endpoint
+app.post('/api/chat/stream', async (req, res) => {
+  try {
+    const { message, conversationHistory, apiKey, reaperState, userProfile } = req.body;
+
+    // Validate required fields
+    if (!message || !apiKey) {
+      return res.status(400).json({ error: 'Missing required fields: message, apiKey' });
+    }
+
+    // Validate message length
+    if (typeof message !== 'string' || message.length > 10000) {
+      return res.status(400).json({ error: 'Message must be a string under 10,000 characters' });
+    }
+
+    // Validate conversation history
+    if (conversationHistory && !Array.isArray(conversationHistory)) {
+      return res.status(400).json({ error: 'conversationHistory must be an array' });
+    }
+
+    // Limit conversation history size
+    const maxHistoryMessages = 50;
+    const validatedHistory = Array.isArray(conversationHistory)
+      ? conversationHistory.slice(-maxHistoryMessages)
+      : [];
+
+    // Set SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    // Build system prompt
+    const systemPrompt = buildEnhancedSystemPrompt(reaperState, userProfile);
+
+    // Select relevant tools
+    const relevantToolNames = selectRelevantTools(message);
+
+    // TODO: Build proper MCP tool definitions with full schemas
+    // For now, we'll enable tools once we have proper MCP tool integration
+    // const tools = relevantToolNames.map(name => ({
+    //   name,
+    //   description: `Tool: ${name}`,
+    //   input_schema: { type: 'object', properties: {} }
+    // }));
+
+    // Prepare messages
+    const messages = [
+      ...validatedHistory,
+      { role: 'user', content: message }
+    ];
+
+    // Call Anthropic API with streaming
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        stream: true,
+        system: systemPrompt,
+        // tools: tools, // TODO: Add once MCP tools are properly defined
+        messages: messages.slice(-10), // Keep last 10 messages for context
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Anthropic API error: ${response.statusText}`);
+    }
+
+    // Stream the response
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) {
+      throw new Error('No response body');
+    }
+
+    let accumulatedText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+
+          if (data === '[DONE]') {
+            res.write(`data: ${JSON.stringify({ type: 'done', content: accumulatedText })}\n\n`);
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(data);
+
+            if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+              accumulatedText += parsed.delta.text;
+              res.write(`data: ${JSON.stringify({ type: 'chunk', content: parsed.delta.text })}\n\n`);
+            }
+          } catch (e) {
+            // Ignore parse errors for event types we don't care about
+          }
+        }
+      }
+    }
+
+    // Generate follow-up questions (async, don't block completion)
+    generateFollowUpQuestions(accumulatedText, validatedHistory, apiKey)
+      .then(followUps => {
+        if (followUps.length > 0) {
+          res.write(`data: ${JSON.stringify({ type: 'followups', followups: followUps })}\n\n`);
+        }
+        res.write(`data: ${JSON.stringify({ type: 'complete' })}\n\n`);
+        res.end();
+      })
+      .catch(error => {
+        console.error('Follow-up generation error:', error);
+        // Still send complete even if follow-ups fail
+        res.write(`data: ${JSON.stringify({ type: 'complete' })}\n\n`);
+        res.end();
+      });
+
+  } catch (error: any) {
+    console.error('Streaming error:', error);
+    res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+    res.end();
+  }
 });
 
 // Get overview
@@ -220,6 +612,40 @@ app.post('/api/osc/config', (req, res) => {
   const { host, port, listenPort } = req.body;
   oscClient.updateConfig({ host, port, listenPort });
   res.json({ success: true, config: oscClient.getConfig() });
+});
+
+// Get REAPER state
+app.get('/api/reaper/state', (req, res) => {
+  res.json(oscClient.getState());
+});
+
+// Subscribe to REAPER state changes (SSE)
+app.get('/api/reaper/state/stream', (req, res) => {
+  // Set SSE headers
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  // Send initial state
+  res.write(`data: ${JSON.stringify(oscClient.getState())}\n\n`);
+
+  // Subscribe to state changes
+  const unsubscribe = oscClient.onStateChange((state) => {
+    try {
+      res.write(`data: ${JSON.stringify(state)}\n\n`);
+    } catch (error) {
+      console.error('Error sending state update:', error);
+    }
+  });
+
+  // Cleanup on client disconnect or error
+  const cleanup = () => {
+    unsubscribe();
+  };
+
+  req.on('close', cleanup);
+  req.on('error', cleanup);
 });
 
 // Transport controls

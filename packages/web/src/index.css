@@ -49,3 +49,17 @@ body {
   @apply hover:scale-105 active:scale-95;
   @apply touch-target flex items-center justify-center gap-2;
 }
+
+/* Voice recording animation */
+@keyframes microphone-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(74, 158, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(74, 158, 255, 0);
+  }
+}
+
+.voice-recording-pulse {
+  animation: microphone-pulse 1.5s infinite;
+}

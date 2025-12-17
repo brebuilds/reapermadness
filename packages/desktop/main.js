@@ -2,6 +2,7 @@ const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const http = require('http');
+const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
 let serverProcess;
@@ -158,6 +159,67 @@ function createWindow() {
   });
 }
 
+// Auto-updater configuration
+function setupAutoUpdater() {
+  // Configure auto-updater
+  autoUpdater.autoDownload = false; // Don't auto-download, ask user first
+  autoUpdater.autoInstallOnAppQuit = true; // Install when app quits
+
+  // Check for updates on startup (only in production)
+  if (!isDev) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+
+  // Update available
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info.version);
+
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', {
+        version: info.version,
+        releaseNotes: info.releaseNotes,
+      });
+    }
+
+    // Auto-download the update
+    autoUpdater.downloadUpdate();
+  });
+
+  // Update not available
+  autoUpdater.on('update-not-available', () => {
+    console.log('App is up to date');
+  });
+
+  // Update downloaded
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded:', info.version);
+
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', {
+        version: info.version,
+      });
+    }
+  });
+
+  // Download progress
+  autoUpdater.on('download-progress', (progressObj) => {
+    console.log(`Download progress: ${progressObj.percent.toFixed(2)}%`);
+
+    if (mainWindow) {
+      mainWindow.webContents.send('download-progress', {
+        percent: progressObj.percent,
+        transferred: progressObj.transferred,
+        total: progressObj.total,
+      });
+    }
+  });
+
+  // Error handling
+  autoUpdater.on('error', (error) => {
+    console.error('Auto-updater error:', error);
+  });
+}
+
 // App lifecycle
 app.whenReady().then(async () => {
   try {
@@ -170,6 +232,9 @@ app.whenReady().then(async () => {
 
     // Then create the window
     createWindow();
+
+    // Setup auto-updater after window is created
+    setupAutoUpdater();
   } catch (error) {
     console.error('Failed to start:', error);
     app.quit();
