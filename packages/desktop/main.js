@@ -270,11 +270,44 @@ app.whenReady().then(async () => {
   }
 });
 
+// Force kill server process (Windows-compatible)
+function killServerProcess() {
+  if (!serverProcess) return;
+
+  console.log('Killing server process...');
+
+  if (process.platform === 'win32') {
+    // On Windows, use taskkill to force kill the entire process tree
+    try {
+      const { execSync } = require('child_process');
+      execSync(`taskkill /pid ${serverProcess.pid} /T /F`, { stdio: 'ignore' });
+      console.log('Server process killed (Windows)');
+    } catch (error) {
+      console.error('Failed to kill server process:', error.message);
+    }
+  } else {
+    // On Mac/Linux, use SIGTERM then SIGKILL
+    try {
+      serverProcess.kill('SIGTERM');
+
+      // If still running after 1 second, force kill
+      setTimeout(() => {
+        if (serverProcess && !serverProcess.killed) {
+          serverProcess.kill('SIGKILL');
+          console.log('Server process force killed');
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Failed to kill server process:', error.message);
+    }
+  }
+
+  serverProcess = null;
+}
+
 app.on('window-all-closed', () => {
   // Kill the server when app closes
-  if (serverProcess) {
-    serverProcess.kill();
-  }
+  killServerProcess();
 
   if (process.platform !== 'darwin') {
     app.quit();
@@ -287,8 +320,18 @@ app.on('activate', () => {
   }
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', (event) => {
+  // Ensure server is killed before quitting
   if (serverProcess) {
-    serverProcess.kill();
+    console.log('Cleaning up before quit...');
+    killServerProcess();
+
+    // On Windows, give it a moment to actually die
+    if (process.platform === 'win32') {
+      event.preventDefault();
+      setTimeout(() => {
+        app.exit(0);
+      }, 500);
+    }
   }
 });
