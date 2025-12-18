@@ -35,8 +35,17 @@ jobs:
       - name: Build web
         run: pnpm build:web
 
+      - name: Verify build artifacts
+        run: |
+          echo "Checking server bundle..."
+          if (Test-Path "packages\server\dist\server-bundle.cjs") { Write-Host "✓ server-bundle.cjs exists" } else { Write-Host "✗ server-bundle.cjs missing"; exit 1 }
+          echo "Checking knowledge data..."
+          if (Test-Path "packages\server\src\knowledge\data.json") { Write-Host "✓ knowledge/data.json exists" } else { Write-Host "✗ knowledge/data.json missing"; exit 1 }
+          echo "Checking web dist..."
+          if (Test-Path "packages\web\dist\index.html") { Write-Host "✓ web/index.html exists" } else { Write-Host "✗ web/index.html missing"; exit 1 }
+
       - name: Build Windows installer
-        run: pnpm --filter reapermadness build:win
+        run: pnpm --filter reapermadness build:win -- --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
