@@ -14,7 +14,89 @@ function getResourcePath(relativePath) {
   if (isDev) {
     return path.join(__dirname, '..', relativePath);
   }
-  return path.join(process.resourcesPath, relativePath);
+  // On Windows, resourcesPath is correct
+  // On Mac, it's inside the .app bundle
+  const resourcesPath = process.resourcesPath || 
+    (process.platform === 'darwin' 
+      ? path.join(path.dirname(app.getPath('exe')), '..', 'Resources')
+      : path.join(path.dirname(app.getPath('exe')), 'resources'));
+  return path.join(resourcesPath, relativePath);
+}
+
+// Get Node.js executable path
+function getNodeExecutable() {
+  if (isDev) {
+    // In dev, use system node (usually in PATH)
+    return 'node';
+  }
+  
+  const fs = require('fs');
+  const { execSync } = require('child_process');
+  
+  // Option 1: Check if node is in PATH
+  try {
+    if (process.platform === 'win32') {
+      execSync('where node', { stdio: 'ignore', timeout: 2000 });
+      return 'node';
+    } else {
+      execSync('which node', { stdio: 'ignore', timeout: 2000 });
+      return 'node';
+    }
+  } catch {
+    // Option 2: Try common installation locations
+    if (process.platform === 'win32') {
+      // Common Windows Node.js locations
+      const possiblePaths = [
+        path.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'nodejs', 'node.exe'),
+        path.join(process.env['PROGRAMFILES(X86)'] || 'C:\\Program Files (x86)', 'nodejs', 'node.exe'),
+        path.join(process.env.LOCALAPPDATA || '', 'Programs', 'nodejs', 'node.exe'),
+        path.join(process.env.APPDATA || '', 'npm', 'node.exe'),
+      ];
+      for (const nodePath of possiblePaths) {
+        try {
+          if (fs.existsSync(nodePath)) {
+            console.log('Found Node.js at:', nodePath);
+            return nodePath;
+          }
+        } catch {}
+      }
+    } else if (process.platform === 'darwin') {
+      // Common Mac Node.js locations
+      const possiblePaths = [
+        '/usr/local/bin/node',
+        '/opt/homebrew/bin/node',
+        '/usr/bin/node',
+        path.join(process.env.HOME || '', '.nvm', 'versions', 'node', 'v18.0.0', 'bin', 'node'),
+      ];
+      for (const nodePath of possiblePaths) {
+        try {
+          if (fs.existsSync(nodePath)) {
+            console.log('Found Node.js at:', nodePath);
+            return nodePath;
+          }
+        } catch {}
+      }
+    } else {
+      // Linux
+      const possiblePaths = [
+        '/usr/bin/node',
+        '/usr/local/bin/node',
+        path.join(process.env.HOME || '', '.nvm', 'versions', 'node', 'v18.0.0', 'bin', 'node'),
+      ];
+      for (const nodePath of possiblePaths) {
+        try {
+          if (fs.existsSync(nodePath)) {
+            console.log('Found Node.js at:', nodePath);
+            return nodePath;
+          }
+        } catch {}
+      }
+    }
+    
+    // Fallback: try 'node' anyway (might work if PATH is set correctly)
+    console.warn('Node.js not found in common locations, trying "node" from PATH');
+    return 'node';
+  }
 }
 
 // Wait for server to be ready
@@ -50,50 +132,138 @@ function waitForServer(port, timeout = 30000) {
 // Start the server
 async function startServer() {
   return new Promise((resolve, reject) => {
+    const fs = require('fs');
+    
+    // Get resources path (handles Windows/Mac differences)
+    const resourcesPath = isDev 
+      ? null 
+      : (process.resourcesPath || 
+         (process.platform === 'darwin' 
+           ? path.join(path.dirname(app.getPath('exe')), '..', 'Resources')
+           : path.join(path.dirname(app.getPath('exe')), 'resources')));
+    
     // In dev mode, use the regular dist/index.js (with node_modules available)
     // In production, use the bundled single-file server
     const serverPath = isDev
       ? path.join(__dirname, '..', 'server', 'dist', 'index.js')
-      : path.join(process.resourcesPath, 'server', 'server-bundle.cjs');
+      : path.join(resourcesPath, 'server', 'server-bundle.cjs');
 
     const knowledgePath = isDev
       ? path.join(__dirname, '..', 'server', 'src', 'knowledge')
-      : path.join(process.resourcesPath, 'server', 'knowledge');
+      : path.join(resourcesPath, 'server', 'knowledge');
 
     const webPath = isDev
       ? path.join(__dirname, '..', 'web', 'dist')
-      : path.join(process.resourcesPath, 'web');
+      : path.join(resourcesPath, 'web');
 
     console.log('Starting server from:', serverPath);
     console.log('Knowledge path:', knowledgePath);
     console.log('Web path:', webPath);
+    console.log('Resources path:', resourcesPath || 'dev mode');
+
+    // Validate paths exist
+    if (!isDev) {
+      if (!fs.existsSync(serverPath)) {
+        const error = new Error(`Server bundle not found at: ${serverPath}\n\nMake sure the build process completed successfully.`);
+        console.error(error.message);
+        reject(error);
+        return;
+      }
+      if (!fs.existsSync(knowledgePath)) {
+        const error = new Error(`Knowledge path not found at: ${knowledgePath}\n\nMake sure the knowledge files are included in the build.`);
+        console.error(error.message);
+        reject(error);
+        return;
+      }
+      const knowledgeDataFile = path.join(knowledgePath, 'data.json');
+      if (!fs.existsSync(knowledgeDataFile)) {
+        const error = new Error(`Knowledge data.json not found at: ${knowledgeDataFile}\n\nExpected file: ${knowledgeDataFile}`);
+        console.error(error.message);
+        reject(error);
+        return;
+      }
+      if (!fs.existsSync(webPath)) {
+        const error = new Error(`Web path not found at: ${webPath}\n\nMake sure the web build is included in the app bundle.`);
+        console.error(error.message);
+        reject(error);
+        return;
+      }
+      const webIndexFile = path.join(webPath, 'index.html');
+      if (!fs.existsSync(webIndexFile)) {
+        const error = new Error(`Web index.html not found at: ${webIndexFile}\n\nExpected file: ${webIndexFile}`);
+        console.error(error.message);
+        reject(error);
+        return;
+      }
+      console.log('All required files found ✓');
+    }
+
+    // Get Node.js executable
+    const nodeExecutable = getNodeExecutable();
+    console.log('Using Node.js executable:', nodeExecutable);
 
     // Spawn server process
-    serverProcess = spawn('node', [serverPath], {
+    serverProcess = spawn(nodeExecutable, [serverPath], {
       env: {
         ...process.env,
         PORT: SERVER_PORT.toString(),
         KNOWLEDGE_PATH: knowledgePath,
         WEB_PATH: webPath,
+        NODE_ENV: isDev ? 'development' : 'production',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
+      shell: process.platform === 'win32', // Use shell on Windows for better compatibility
     });
 
+    let serverOutput = '';
+    let serverErrors = '';
+    let serverStarted = false;
+
     serverProcess.stdout.on('data', (data) => {
-      console.log('Server:', data.toString());
+      const output = data.toString();
+      serverOutput += output;
+      console.log('Server stdout:', output);
+      // Check if server is ready
+      if (output.includes('running at') || output.includes('REAPER Assistant API')) {
+        serverStarted = true;
+      }
     });
 
     serverProcess.stderr.on('data', (data) => {
-      console.error('Server error:', data.toString());
+      const output = data.toString();
+      serverErrors += output;
+      console.error('Server stderr:', output);
     });
 
     serverProcess.on('error', (err) => {
       console.error('Failed to start server:', err);
-      reject(err);
+      let errorMessage = err.message;
+      
+      // Provide helpful error messages
+      if (err.code === 'ENOENT' && nodeExecutable === 'node') {
+        errorMessage = `Node.js not found. Please install Node.js from https://nodejs.org/\n\nOriginal error: ${err.message}`;
+      } else if (err.code === 'ENOENT') {
+        errorMessage = `Node.js executable not found at: ${nodeExecutable}\n\nPlease ensure Node.js is installed and accessible.\nOriginal error: ${err.message}`;
+      }
+      
+      const enhancedError = new Error(errorMessage);
+      enhancedError.stack = err.stack;
+      reject(enhancedError);
     });
 
     serverProcess.on('close', (code) => {
       console.log('Server exited with code:', code);
+      if (code !== 0 && code !== null && !serverStarted) {
+        console.error('Server output:', serverOutput);
+        console.error('Server errors:', serverErrors);
+        if (!serverProcess.killed) {
+          // Server crashed unexpectedly before starting
+          const error = new Error(`Server process exited with code ${code}\n\nOutput:\n${serverOutput}\n\nErrors:\n${serverErrors}`);
+          if (!serverStarted) {
+            reject(error);
+          }
+        }
+      }
       serverProcess = null;
     });
 
@@ -238,8 +408,13 @@ app.whenReady().then(async () => {
   try {
     console.log('Starting Reapermadness...');
     console.log('Dev mode:', isDev);
+    console.log('Platform:', process.platform);
     console.log('App path:', app.getAppPath());
-    console.log('Resources path:', process.resourcesPath);
+    console.log('Executable path:', app.getPath('exe'));
+    console.log('Resources path:', process.resourcesPath || 
+      (process.platform === 'darwin' 
+        ? path.join(path.dirname(app.getPath('exe')), '..', 'Resources')
+        : path.join(path.dirname(app.getPath('exe')), 'resources')));
 
     // Start the server first
     console.log('Starting server...');

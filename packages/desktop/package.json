@@ -38,14 +38,15 @@
     },
     "files": [
       "main.js",
-      "preload.js",
-      "server/**/*",
-      "web/**/*"
+      "preload.js"
     ],
     "extraResources": [
       {
         "from": "../server/dist/server-bundle.cjs",
-        "to": "server/server-bundle.cjs"
+        "to": "server/server-bundle.cjs",
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "../server/src/knowledge",
