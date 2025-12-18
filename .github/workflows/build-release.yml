@@ -29,6 +29,9 @@ jobs:
       - name: Build server
         run: pnpm build:server
 
+      - name: Bundle server
+        run: pnpm bundle:server
+
       - name: Build web
         run: pnpm build:web
 
