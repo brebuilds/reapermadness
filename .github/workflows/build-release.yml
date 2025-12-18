@@ -45,7 +45,7 @@ jobs:
           if (Test-Path "packages\web\dist\index.html") { Write-Host "✓ web/index.html exists" } else { Write-Host "✗ web/index.html missing"; exit 1 }
 
       - name: Build Windows installer
-        run: pnpm --filter reapermadness exec electron-builder --win --publish never
+        run: pnpm --filter reapermadness build:win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
